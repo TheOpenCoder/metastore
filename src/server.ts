@@ -14,8 +14,6 @@ const yoga = createYoga({ schema });
 
 app.use(yoga.graphqlEndpoint, yoga);
 
-console.log(process.env.NODE_ENV);
-
 app.listen(PORT, () => {
   console.log(`Running a GraphQL server at http://localhost:${PORT}/graphql`);
 });

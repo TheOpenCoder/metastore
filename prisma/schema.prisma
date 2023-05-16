@@ -7,32 +7,38 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Widget {
-  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-}
+// model Widget {
+//   id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+// }
 
-model Post {
-  id        Int      @id @default(sequence())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  title     String   @db.String(255)
-  content   String?
-  published Boolean  @default(false)
-  author    User     @relation(fields: [authorId], references: [id])
-  authorId  Int
-}
+// model Post {
+//   id        Int      @id @default(sequence())
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime
+//   title     String   @db.String(255)
+//   content   String?
+//   published Boolean  @default(false)
+//   author    User     @relation(fields: [authorId], references: [id])
+//   authorId  Int
+// }
 
-model Profile {
-  id     Int     @id @default(sequence())
-  bio    String?
-  user   User    @relation(fields: [userId], references: [id])
-  userId Int     @unique
-}
+// model Profile {
+//   id     Int     @id @default(sequence())
+//   bio    String?
+//   user   User    @relation(fields: [userId], references: [id])
+//   userId Int     @unique
+// }
+
+// model User {
+//   id      Int      @id @default(sequence())
+//   email   String   @unique
+//   name    String?
+//   posts   Post[]
+//   profile Profile?
+// }
 
 model User {
-  id      Int      @id @default(sequence())
-  email   String   @unique
-  name    String?
-  posts   Post[]
-  profile Profile?
+  id       String @id @default(uuid())
+  username String @unique @db.String(255)
+  email    String @unique @db.String(255)
 }
