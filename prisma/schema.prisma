@@ -54,12 +54,14 @@ enum Features {
 
 model User {
   id                  String                @id @default(uuid())
-  username            String                @unique @db.String(255)
+  publicAddress       String                @unique
+  username            String                @unique
   firstName           String
   lastName            String?
   bio                 String?
   profilePicture      String?
-  userSettings        UserSettings?
+  userSettings        UserSettings          @relation(fields: [userSettingsId], references: [id])
+  userSettingsId      String                @unique
   followedBy          Follows[]             @relation("following")
   following           Follows[]             @relation("follower")
   requestedBy         Requests[]            @relation("requesting")
@@ -76,9 +78,8 @@ model User {
 }
 
 model UserSettings {
-  // id                       String       @id @default(uuid())
-  user                     User         @relation(fields: [userId], references: [id])
-  userId                   String       @id @unique
+  id                       String       @id @default(uuid())
+  User                     User?
   onlineStatus             OnlineStatus @default(ONLINE)
   isPrivate                Boolean      @default(false)
   canReceiveFriendRequests Boolean      @default(true)

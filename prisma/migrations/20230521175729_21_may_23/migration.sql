@@ -1,12 +1,3 @@
-/*
-  Warnings:
-
-  - You are about to drop the column `email` on the `User` table. All the data in the column will be lost.
-  - Added the required column `firstName` to the `User` table without a default value. This is not possible if the table is not empty.
-  - Added the required column `updatedAt` to the `User` table without a default value. This is not possible if the table is not empty.
-  - Added the required column `userSettingsUserId` to the `User` table without a default value. This is not possible if the table is not empty.
-
-*/
 -- CreateEnum
 CREATE TYPE "OnlineStatus" AS ENUM ('ONLINE', 'OFFLINE', 'AWAY');
 
@@ -19,28 +10,31 @@ CREATE TYPE "Genre" AS ENUM ('ACTION', 'ADVENTURE', 'RPG', 'STRATEGY', 'SIMULATI
 -- CreateEnum
 CREATE TYPE "Features" AS ENUM ('SINGLE_PLAYER', 'MULTI_PLAYER', 'CO_OP', 'CROSS_PLATFORM', 'CLOUD_SAVES', 'CONTROLLER_SUPPORT', 'IN_GAME_PURCHASES', 'ONLINE_PVP', 'ONLINE_CO_OP', 'LOCAL_CO_OP', 'ONLINE_MULTI_PLAYER', 'LOCAL_MULTI_PLAYER');
 
--- DropIndex
-DROP INDEX "User_email_key";
+-- CreateTable
+CREATE TABLE "User" (
+    "id" STRING NOT NULL,
+    "publicAddress" STRING NOT NULL,
+    "username" STRING NOT NULL,
+    "firstName" STRING NOT NULL,
+    "lastName" STRING,
+    "bio" STRING,
+    "profilePicture" STRING,
+    "userSettingsId" STRING NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
--- AlterTable
-ALTER TABLE "User" DROP COLUMN "email";
-ALTER TABLE "User" ADD COLUMN     "bio" STRING;
-ALTER TABLE "User" ADD COLUMN     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP;
-ALTER TABLE "User" ADD COLUMN     "firstName" STRING NOT NULL;
-ALTER TABLE "User" ADD COLUMN     "lastName" STRING;
-ALTER TABLE "User" ADD COLUMN     "profilePicture" STRING;
-ALTER TABLE "User" ADD COLUMN     "updatedAt" TIMESTAMP(3) NOT NULL;
-ALTER TABLE "User" ADD COLUMN     "userSettingsUserId" STRING NOT NULL;
+    CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+);
 
 -- CreateTable
 CREATE TABLE "UserSettings" (
-    "userId" STRING NOT NULL,
+    "id" STRING NOT NULL,
+    "onlineStatus" "OnlineStatus" NOT NULL DEFAULT 'ONLINE',
     "isPrivate" BOOL NOT NULL DEFAULT false,
     "canReceiveFriendRequests" BOOL NOT NULL DEFAULT true,
-    "onlineStatus" "OnlineStatus" NOT NULL DEFAULT 'ONLINE',
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "UserSettings_pkey" PRIMARY KEY ("userId")
+    CONSTRAINT "UserSettings_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -80,14 +74,16 @@ CREATE TABLE "Game" (
 
 -- CreateTable
 CREATE TABLE "LibraryGames" (
+    "id" STRING NOT NULL,
     "userId" STRING NOT NULL,
     "gameId" STRING NOT NULL,
     "isCompleted" BOOL NOT NULL DEFAULT false,
     "hoursPlayed" INT4 NOT NULL DEFAULT 0,
+    "gameProgress" INT4 NOT NULL DEFAULT 0,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "LibraryGames_pkey" PRIMARY KEY ("userId","gameId")
+    CONSTRAINT "LibraryGames_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -108,6 +104,7 @@ CREATE TABLE "Addon" (
     "currency" "Currency" DEFAULT 'STORE',
     "grade" STRING,
     "gameId" STRING NOT NULL,
+    "ownerId" STRING,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -115,7 +112,16 @@ CREATE TABLE "Addon" (
 );
 
 -- CreateTable
-CREATE TABLE "Achievements" (
+CREATE TABLE "FavoriteAddons" (
+    "userId" STRING NOT NULL,
+    "addonId" STRING NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "FavoriteAddons_pkey" PRIMARY KEY ("userId","addonId")
+);
+
+-- CreateTable
+CREATE TABLE "Achievement" (
     "id" STRING NOT NULL,
     "title" STRING NOT NULL,
     "description" STRING NOT NULL,
@@ -125,11 +131,19 @@ CREATE TABLE "Achievements" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "Achievements_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Achievement_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "Reviews" (
+CREATE TABLE "LibraryGamesAchivement" (
+    "libraryGamesId" STRING NOT NULL,
+    "achievementId" STRING NOT NULL,
+
+    CONSTRAINT "LibraryGamesAchivement_pkey" PRIMARY KEY ("libraryGamesId","achievementId")
+);
+
+-- CreateTable
+CREATE TABLE "Review" (
     "id" STRING NOT NULL,
     "content" STRING,
     "rating" INT4 NOT NULL,
@@ -138,7 +152,7 @@ CREATE TABLE "Reviews" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "Reviews_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Review_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -166,19 +180,25 @@ CREATE TABLE "OrganisationMembers" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "UserSettings_userId_key" ON "UserSettings"("userId");
+CREATE UNIQUE INDEX "User_publicAddress_key" ON "User"("publicAddress");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_username_key" ON "User"("username");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_userSettingsId_key" ON "User"("userSettingsId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Game_title_key" ON "Game"("title");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Achievements_title_key" ON "Achievements"("title");
+CREATE UNIQUE INDEX "Achievement_title_key" ON "Achievement"("title");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Organisation_name_key" ON "Organisation"("name");
 
 -- AddForeignKey
-ALTER TABLE "UserSettings" ADD CONSTRAINT "UserSettings_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "User" ADD CONSTRAINT "User_userSettingsId_fkey" FOREIGN KEY ("userSettingsId") REFERENCES "UserSettings"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Follows" ADD CONSTRAINT "Follows_followerId_fkey" FOREIGN KEY ("followerId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -211,13 +231,28 @@ ALTER TABLE "FavoriteGames" ADD CONSTRAINT "FavoriteGames_gameId_fkey" FOREIGN K
 ALTER TABLE "Addon" ADD CONSTRAINT "Addon_gameId_fkey" FOREIGN KEY ("gameId") REFERENCES "Game"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Achievements" ADD CONSTRAINT "Achievements_gameId_fkey" FOREIGN KEY ("gameId") REFERENCES "Game"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Addon" ADD CONSTRAINT "Addon_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Reviews" ADD CONSTRAINT "Reviews_gameId_fkey" FOREIGN KEY ("gameId") REFERENCES "Game"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "FavoriteAddons" ADD CONSTRAINT "FavoriteAddons_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Reviews" ADD CONSTRAINT "Reviews_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "FavoriteAddons" ADD CONSTRAINT "FavoriteAddons_addonId_fkey" FOREIGN KEY ("addonId") REFERENCES "Addon"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Achievement" ADD CONSTRAINT "Achievement_gameId_fkey" FOREIGN KEY ("gameId") REFERENCES "Game"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "LibraryGamesAchivement" ADD CONSTRAINT "LibraryGamesAchivement_libraryGamesId_fkey" FOREIGN KEY ("libraryGamesId") REFERENCES "LibraryGames"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "LibraryGamesAchivement" ADD CONSTRAINT "LibraryGamesAchivement_achievementId_fkey" FOREIGN KEY ("achievementId") REFERENCES "Achievement"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Review" ADD CONSTRAINT "Review_gameId_fkey" FOREIGN KEY ("gameId") REFERENCES "Game"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Review" ADD CONSTRAINT "Review_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Organisation" ADD CONSTRAINT "Organisation_creatorId_fkey" FOREIGN KEY ("creatorId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

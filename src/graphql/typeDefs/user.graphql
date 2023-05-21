@@ -1,37 +1,99 @@
 type User {
   id: ID!
+  publicAddress: String!
   username: String!
   firstName: String!
   lastName: String
   bio: String
-  profilePicture: URL
-  userSettings: UserSettings!
+  profilePicture: String
+  settings: UserSettings!
+  # socials: UserSocials!
+  # games: UserGames!
+  # addons: UserAddons!
+  # organisations: UserOrganisations!
+  # reviews: [Review]!
+  # achievements: [Achievement]!
+  # metriwcs: UserMetrics!
+  createdAt: Date!
+  updatedAt: Date
+}
+
+type UserSocials {
   friends: [User]!
   friendRequests: [User]!
-  reviews: [Review]!
-  achievements: [Achievement]!
-  libraryGames: [Game]!
-  favoriteGames: [Game]!
-  ownedAddons: [Addon]!
-  favoriteAddons: [Addon]!
-  createdOrgs: Organisation
-  joinedOrgs: [Organisation]!
+}
+
+type UserGames {
+  library: [Game]!
+  favorite: [Game]!
+}
+
+type UserAddons {
+  library: [Addon]!
+  favorite: [Addon]!
+}
+
+type UserOrganisations {
+  created: [Organisation]!
+  joined: [Organisation]!
+}
+
+type UserMetrics {
   totalAchievements: Int
   totalHoursPlayed: Int
   totalFriends: Int
-  createdAt: Date!
-  updatedAt: Date
 }
 
 type UserSettings {
   onlineStatus: OnlineStatus!
   isPrivate: Boolean
+  canReceiveFriendRequests: Boolean
+}
+
+input RegisterUserInput {
+  publicAddress: String!
+  username: String!
+  firstName: String!
+  profilePicture: String
+}
+
+input LoginUserInput {
+  publicAddress: String!
+  signature: String!
+}
+
+input UpdateUserInput {
+  username: String
+  firstName: String
+  lastName: String
+  bio: String
+  profilePicture: String
+  userSettings: UpdateUserSettingsInput
+}
+
+input UpdateUserSettingsInput {
+  onlineStatus: OnlineStatus
+  isPrivate: Boolean
   canReceiveFriendRequest: Boolean
-  updatedAt: Date
+}
+
+input DeleteUserInput {
+  id: ID!
+  publicAddress: String!
+  signature: String!
 }
 
 type Query {
   user(id: ID!): User
   users: [User]!
   me: User!
+}
+
+type Mutation {
+  registerUser(input: RegisterUserInput!): User!
+  loginUser(input: LoginUserInput): User!
+  updateUser(input: UpdateUserInput!): User!
+  deleteUser(input: DeleteUserInput): Boolean!
+  sendFriendRequest(id: ID!): Boolean!
+  acceptFriendRequest(id: ID!): Boolean!
 }

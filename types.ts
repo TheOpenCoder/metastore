@@ -13,7 +13,6 @@ export type Scalars = {
   Int: number;
   Float: number;
   Date: any;
-  URL: any;
 };
 
 export type Achievement = {
@@ -34,6 +33,12 @@ export enum Currency {
   Usd = 'USD',
   Usdt = 'USDT'
 }
+
+export type DeleteUserInput = {
+  id: Scalars['ID'];
+  publicAddress: Scalars['String'];
+  signature: Scalars['String'];
+};
 
 export enum Features {
   CloudSaves = 'CLOUD_SAVES',
@@ -73,6 +78,51 @@ export enum Genre {
   Strategy = 'STRATEGY'
 }
 
+export type LoginUserInput = {
+  publicAddress: Scalars['String'];
+  signature: Scalars['String'];
+};
+
+export type Mutation = {
+  __typename?: 'Mutation';
+  acceptFriendRequest: Scalars['Boolean'];
+  deleteUser: Scalars['Boolean'];
+  loginUser: User;
+  registerUser: User;
+  sendFriendRequest: Scalars['Boolean'];
+  updateUser: User;
+};
+
+
+export type MutationAcceptFriendRequestArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type MutationDeleteUserArgs = {
+  input?: InputMaybe<DeleteUserInput>;
+};
+
+
+export type MutationLoginUserArgs = {
+  input?: InputMaybe<LoginUserInput>;
+};
+
+
+export type MutationRegisterUserArgs = {
+  input: RegisterUserInput;
+};
+
+
+export type MutationSendFriendRequestArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type MutationUpdateUserArgs = {
+  input: UpdateUserInput;
+};
+
 export enum OnlineStatus {
   Away = 'AWAY',
   Offline = 'OFFLINE',
@@ -97,44 +147,84 @@ export type QueryUserArgs = {
   id: Scalars['ID'];
 };
 
+export type RegisterUserInput = {
+  firstName: Scalars['String'];
+  profilePicture?: InputMaybe<Scalars['String']>;
+  publicAddress: Scalars['String'];
+  username: Scalars['String'];
+};
+
 export type Review = {
   __typename?: 'Review';
   id?: Maybe<Scalars['ID']>;
   name?: Maybe<Scalars['String']>;
 };
 
+export type UpdateUserInput = {
+  bio?: InputMaybe<Scalars['String']>;
+  firstName?: InputMaybe<Scalars['String']>;
+  lastName?: InputMaybe<Scalars['String']>;
+  profilePicture?: InputMaybe<Scalars['String']>;
+  userSettings?: InputMaybe<UpdateUserSettingsInput>;
+  username?: InputMaybe<Scalars['String']>;
+};
+
+export type UpdateUserSettingsInput = {
+  canReceiveFriendRequest?: InputMaybe<Scalars['Boolean']>;
+  isPrivate?: InputMaybe<Scalars['Boolean']>;
+  onlineStatus?: InputMaybe<OnlineStatus>;
+};
+
 export type User = {
   __typename?: 'User';
-  achievements: Array<Maybe<Achievement>>;
   bio?: Maybe<Scalars['String']>;
   createdAt: Scalars['Date'];
-  createdOrgs?: Maybe<Organisation>;
-  favoriteAddons: Array<Maybe<Addon>>;
-  favoriteGames: Array<Maybe<Game>>;
   firstName: Scalars['String'];
-  friendRequests: Array<Maybe<User>>;
-  friends: Array<Maybe<User>>;
   id: Scalars['ID'];
-  joinedOrgs: Array<Maybe<Organisation>>;
   lastName?: Maybe<Scalars['String']>;
-  libraryGames: Array<Maybe<Game>>;
-  ownedAddons: Array<Maybe<Addon>>;
-  profilePicture?: Maybe<Scalars['URL']>;
-  reviews: Array<Maybe<Review>>;
+  profilePicture?: Maybe<Scalars['String']>;
+  publicAddress: Scalars['String'];
+  settings: UserSettings;
+  updatedAt?: Maybe<Scalars['Date']>;
+  username: Scalars['String'];
+};
+
+export type UserAddons = {
+  __typename?: 'UserAddons';
+  favorite: Array<Maybe<Addon>>;
+  library: Array<Maybe<Addon>>;
+};
+
+export type UserGames = {
+  __typename?: 'UserGames';
+  favorite: Array<Maybe<Game>>;
+  library: Array<Maybe<Game>>;
+};
+
+export type UserMetrics = {
+  __typename?: 'UserMetrics';
   totalAchievements?: Maybe<Scalars['Int']>;
   totalFriends?: Maybe<Scalars['Int']>;
   totalHoursPlayed?: Maybe<Scalars['Int']>;
-  updatedAt?: Maybe<Scalars['Date']>;
-  userSettings: UserSettings;
-  username: Scalars['String'];
+};
+
+export type UserOrganisations = {
+  __typename?: 'UserOrganisations';
+  created: Array<Maybe<Organisation>>;
+  joined: Array<Maybe<Organisation>>;
 };
 
 export type UserSettings = {
   __typename?: 'UserSettings';
-  canReceiveFriendRequest?: Maybe<Scalars['Boolean']>;
+  canReceiveFriendRequests?: Maybe<Scalars['Boolean']>;
   isPrivate?: Maybe<Scalars['Boolean']>;
   onlineStatus: OnlineStatus;
-  updatedAt?: Maybe<Scalars['Date']>;
+};
+
+export type UserSocials = {
+  __typename?: 'UserSocials';
+  friendRequests: Array<Maybe<User>>;
+  friends: Array<Maybe<User>>;
 };
 
 
@@ -213,19 +303,29 @@ export type ResolversTypes = {
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   Currency: Currency;
   Date: ResolverTypeWrapper<Scalars['Date']>;
+  DeleteUserInput: DeleteUserInput;
   Features: Features;
   Game: ResolverTypeWrapper<Game>;
   Genre: Genre;
   ID: ResolverTypeWrapper<Scalars['ID']>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
+  LoginUserInput: LoginUserInput;
+  Mutation: ResolverTypeWrapper<{}>;
   OnlineStatus: OnlineStatus;
   Organisation: ResolverTypeWrapper<Organisation>;
   Query: ResolverTypeWrapper<{}>;
+  RegisterUserInput: RegisterUserInput;
   Review: ResolverTypeWrapper<Review>;
   String: ResolverTypeWrapper<Scalars['String']>;
-  URL: ResolverTypeWrapper<Scalars['URL']>;
+  UpdateUserInput: UpdateUserInput;
+  UpdateUserSettingsInput: UpdateUserSettingsInput;
   User: ResolverTypeWrapper<User>;
+  UserAddons: ResolverTypeWrapper<UserAddons>;
+  UserGames: ResolverTypeWrapper<UserGames>;
+  UserMetrics: ResolverTypeWrapper<UserMetrics>;
+  UserOrganisations: ResolverTypeWrapper<UserOrganisations>;
   UserSettings: ResolverTypeWrapper<UserSettings>;
+  UserSocials: ResolverTypeWrapper<UserSocials>;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -234,16 +334,26 @@ export type ResolversParentTypes = {
   Addon: Addon;
   Boolean: Scalars['Boolean'];
   Date: Scalars['Date'];
+  DeleteUserInput: DeleteUserInput;
   Game: Game;
   ID: Scalars['ID'];
   Int: Scalars['Int'];
+  LoginUserInput: LoginUserInput;
+  Mutation: {};
   Organisation: Organisation;
   Query: {};
+  RegisterUserInput: RegisterUserInput;
   Review: Review;
   String: Scalars['String'];
-  URL: Scalars['URL'];
+  UpdateUserInput: UpdateUserInput;
+  UpdateUserSettingsInput: UpdateUserSettingsInput;
   User: User;
+  UserAddons: UserAddons;
+  UserGames: UserGames;
+  UserMetrics: UserMetrics;
+  UserOrganisations: UserOrganisations;
   UserSettings: UserSettings;
+  UserSocials: UserSocials;
 };
 
 export type AchievementResolvers<ContextType = any, ParentType extends ResolversParentTypes['Achievement'] = ResolversParentTypes['Achievement']> = {
@@ -268,6 +378,15 @@ export type GameResolvers<ContextType = any, ParentType extends ResolversParentT
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
+  acceptFriendRequest?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationAcceptFriendRequestArgs, 'id'>>;
+  deleteUser?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, Partial<MutationDeleteUserArgs>>;
+  loginUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, Partial<MutationLoginUserArgs>>;
+  registerUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationRegisterUserArgs, 'input'>>;
+  sendFriendRequest?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationSendFriendRequestArgs, 'id'>>;
+  updateUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationUpdateUserArgs, 'input'>>;
+};
+
 export type OrganisationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Organisation'] = ResolversParentTypes['Organisation']> = {
   id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -286,41 +405,55 @@ export type ReviewResolvers<ContextType = any, ParentType extends ResolversParen
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export interface UrlScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['URL'], any> {
-  name: 'URL';
-}
-
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
-  achievements?: Resolver<Array<Maybe<ResolversTypes['Achievement']>>, ParentType, ContextType>;
   bio?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
-  createdOrgs?: Resolver<Maybe<ResolversTypes['Organisation']>, ParentType, ContextType>;
-  favoriteAddons?: Resolver<Array<Maybe<ResolversTypes['Addon']>>, ParentType, ContextType>;
-  favoriteGames?: Resolver<Array<Maybe<ResolversTypes['Game']>>, ParentType, ContextType>;
   firstName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  friendRequests?: Resolver<Array<Maybe<ResolversTypes['User']>>, ParentType, ContextType>;
-  friends?: Resolver<Array<Maybe<ResolversTypes['User']>>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  joinedOrgs?: Resolver<Array<Maybe<ResolversTypes['Organisation']>>, ParentType, ContextType>;
   lastName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  libraryGames?: Resolver<Array<Maybe<ResolversTypes['Game']>>, ParentType, ContextType>;
-  ownedAddons?: Resolver<Array<Maybe<ResolversTypes['Addon']>>, ParentType, ContextType>;
-  profilePicture?: Resolver<Maybe<ResolversTypes['URL']>, ParentType, ContextType>;
-  reviews?: Resolver<Array<Maybe<ResolversTypes['Review']>>, ParentType, ContextType>;
-  totalAchievements?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  totalFriends?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  totalHoursPlayed?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  profilePicture?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  publicAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  settings?: Resolver<ResolversTypes['UserSettings'], ParentType, ContextType>;
   updatedAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
-  userSettings?: Resolver<ResolversTypes['UserSettings'], ParentType, ContextType>;
   username?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type UserAddonsResolvers<ContextType = any, ParentType extends ResolversParentTypes['UserAddons'] = ResolversParentTypes['UserAddons']> = {
+  favorite?: Resolver<Array<Maybe<ResolversTypes['Addon']>>, ParentType, ContextType>;
+  library?: Resolver<Array<Maybe<ResolversTypes['Addon']>>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type UserGamesResolvers<ContextType = any, ParentType extends ResolversParentTypes['UserGames'] = ResolversParentTypes['UserGames']> = {
+  favorite?: Resolver<Array<Maybe<ResolversTypes['Game']>>, ParentType, ContextType>;
+  library?: Resolver<Array<Maybe<ResolversTypes['Game']>>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type UserMetricsResolvers<ContextType = any, ParentType extends ResolversParentTypes['UserMetrics'] = ResolversParentTypes['UserMetrics']> = {
+  totalAchievements?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  totalFriends?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  totalHoursPlayed?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type UserOrganisationsResolvers<ContextType = any, ParentType extends ResolversParentTypes['UserOrganisations'] = ResolversParentTypes['UserOrganisations']> = {
+  created?: Resolver<Array<Maybe<ResolversTypes['Organisation']>>, ParentType, ContextType>;
+  joined?: Resolver<Array<Maybe<ResolversTypes['Organisation']>>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type UserSettingsResolvers<ContextType = any, ParentType extends ResolversParentTypes['UserSettings'] = ResolversParentTypes['UserSettings']> = {
-  canReceiveFriendRequest?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  canReceiveFriendRequests?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   isPrivate?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   onlineStatus?: Resolver<ResolversTypes['OnlineStatus'], ParentType, ContextType>;
-  updatedAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type UserSocialsResolvers<ContextType = any, ParentType extends ResolversParentTypes['UserSocials'] = ResolversParentTypes['UserSocials']> = {
+  friendRequests?: Resolver<Array<Maybe<ResolversTypes['User']>>, ParentType, ContextType>;
+  friends?: Resolver<Array<Maybe<ResolversTypes['User']>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -329,11 +462,16 @@ export type Resolvers<ContextType = any> = {
   Addon?: AddonResolvers<ContextType>;
   Date?: GraphQLScalarType;
   Game?: GameResolvers<ContextType>;
+  Mutation?: MutationResolvers<ContextType>;
   Organisation?: OrganisationResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Review?: ReviewResolvers<ContextType>;
-  URL?: GraphQLScalarType;
   User?: UserResolvers<ContextType>;
+  UserAddons?: UserAddonsResolvers<ContextType>;
+  UserGames?: UserGamesResolvers<ContextType>;
+  UserMetrics?: UserMetricsResolvers<ContextType>;
+  UserOrganisations?: UserOrganisationsResolvers<ContextType>;
   UserSettings?: UserSettingsResolvers<ContextType>;
+  UserSocials?: UserSocialsResolvers<ContextType>;
 };
 
