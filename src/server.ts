@@ -1,13 +1,16 @@
 import * as dotenv from 'dotenv';
 dotenv.config({ path: `.env.${process.env.NODE_ENV}.local` });
 import * as express from 'express';
-import { createYoga } from 'graphql-yoga';
-// import serverlessHttp from 'serverless-http';
+import { createYoga, createSchema } from 'graphql-yoga';
 
-import { schema } from './schema';
+import typeDefs from './graphql/typeDefs';
+import resolvers from './graphql/resolvers';
+import { PORT } from './utils';
 
-// Constants
-const PORT: string = process.env.PORT || '5000';
+const schema = createSchema({
+  typeDefs,
+  resolvers,
+});
 
 const app = express();
 const yoga = createYoga({ schema });

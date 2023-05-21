@@ -1,0 +1,37 @@
+type User {
+  id: ID!
+  username: String!
+  firstName: String!
+  lastName: String
+  bio: String
+  profilePicture: URL
+  userSettings: UserSettings!
+  friends: [User]!
+  friendRequests: [User]!
+  reviews: [Review]!
+  achievements: [Achievement]!
+  libraryGames: [Game]!
+  favoriteGames: [Game]!
+  ownedAddons: [Addon]!
+  favoriteAddons: [Addon]!
+  createdOrgs: Organisation
+  joinedOrgs: [Organisation]!
+  totalAchievements: Int
+  totalHoursPlayed: Int
+  totalFriends: Int
+  createdAt: Date!
+  updatedAt: Date
+}
+
+type UserSettings {
+  onlineStatus: OnlineStatus!
+  isPrivate: Boolean
+  canReceiveFriendRequest: Boolean
+  updatedAt: Date
+}
+
+type Query {
+  user(id: ID!): User
+  users: [User]!
+  me: User!
+}

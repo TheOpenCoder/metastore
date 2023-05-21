@@ -1,0 +1,115 @@
+type Achievement {
+  id: ID
+  name: String
+}
+
+type Addon {
+  id: ID
+  name: String
+}
+
+type Game {
+  id: ID
+  name: String
+}
+
+type Organisation {
+  id: ID
+  name: String
+}
+
+type Review {
+  id: ID
+  name: String
+}
+
+scalar URL
+
+scalar Date
+
+enum OnlineStatus {
+  ONLINE
+  OFFLINE
+  AWAY
+}
+
+enum Currency {
+  STORE
+  USDT
+  TFUEL
+  USD
+}
+
+enum Genre {
+  ACTION
+  ADVENTURE
+  RPG
+  STRATEGY
+  SIMULATION
+  SPORTS
+  PUZZLE
+  HORROR
+  SHOOTER
+  FIGHTING
+  PLATFORMER
+  RACING
+  MMO
+  OTHER
+}
+
+enum Features {
+  SINGLE_PLAYER
+  MULTI_PLAYER
+  CO_OP
+  CROSS_PLATFORM
+  CLOUD_SAVES
+  CONTROLLER_SUPPORT
+  IN_GAME_PURCHASES
+  ONLINE_PVP
+  ONLINE_CO_OP
+  LOCAL_CO_OP
+  ONLINE_MULTI_PLAYER
+  LOCAL_MULTI_PLAYER
+}
+
+type User {
+  id: ID!
+  username: String!
+  firstName: String!
+  lastName: String
+  bio: String
+  profilePicture: URL
+  userSettings: UserSettings!
+  friends: [User]!
+  friendRequests: [User]!
+  reviews: [Review]!
+  achievements: [Achievement]!
+  libraryGames: [Game]!
+  favoriteGames: [Game]!
+  ownedAddons: [Addon]!
+  favoriteAddons: [Addon]!
+  createdOrgs: Organisation
+  joinedOrgs: [Organisation]!
+  totalAchievements: Int
+  totalHoursPlayed: Int
+  totalFriends: Int
+  createdAt: Date!
+  updatedAt: Date
+}
+
+type UserSettings {
+  onlineStatus: OnlineStatus!
+  isPrivate: Boolean
+  canReceiveFriendRequest: Boolean
+  updatedAt: Date
+}
+
+type Query {
+  user(id: ID!): User
+  users: [User]!
+  me: User!
+}
+
+schema {
+  query: Query
+}

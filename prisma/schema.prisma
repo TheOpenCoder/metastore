@@ -7,38 +7,229 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// model Widget {
-//   id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-// }
+enum OnlineStatus {
+  ONLINE
+  OFFLINE
+  AWAY
+}
 
-// model Post {
-//   id        Int      @id @default(sequence())
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime
-//   title     String   @db.String(255)
-//   content   String?
-//   published Boolean  @default(false)
-//   author    User     @relation(fields: [authorId], references: [id])
-//   authorId  Int
-// }
+enum Currency {
+  STORE
+  USDT
+  TFUEL
+  USD
+}
 
-// model Profile {
-//   id     Int     @id @default(sequence())
-//   bio    String?
-//   user   User    @relation(fields: [userId], references: [id])
-//   userId Int     @unique
-// }
+enum Genre {
+  ACTION
+  ADVENTURE
+  RPG
+  STRATEGY
+  SIMULATION
+  SPORTS
+  PUZZLE
+  HORROR
+  SHOOTER
+  FIGHTING
+  PLATFORMER
+  RACING
+  MMO
+  OTHER
+}
 
-// model User {
-//   id      Int      @id @default(sequence())
-//   email   String   @unique
-//   name    String?
-//   posts   Post[]
-//   profile Profile?
-// }
+enum Features {
+  SINGLE_PLAYER
+  MULTI_PLAYER
+  CO_OP
+  CROSS_PLATFORM
+  CLOUD_SAVES
+  CONTROLLER_SUPPORT
+  IN_GAME_PURCHASES
+  ONLINE_PVP
+  ONLINE_CO_OP
+  LOCAL_CO_OP
+  ONLINE_MULTI_PLAYER
+  LOCAL_MULTI_PLAYER
+}
 
 model User {
-  id       String @id @default(uuid())
-  username String @unique @db.String(255)
-  email    String @unique @db.String(255)
+  id                  String                @id @default(uuid())
+  username            String                @unique @db.String(255)
+  firstName           String
+  lastName            String?
+  bio                 String?
+  profilePicture      String?
+  userSettings        UserSettings?
+  followedBy          Follows[]             @relation("following")
+  following           Follows[]             @relation("follower")
+  requestedBy         Requests[]            @relation("requesting")
+  requesting          Requests[]            @relation("requester")
+  Reviews             Review[]
+  libraryGames        LibraryGames[]
+  favouriteGames      FavoriteGames[]
+  ownedAddons         Addon[]
+  FavoriteAddons      FavoriteAddons[]
+  createdOrganization Organisation[]
+  joinedOrganization  OrganisationMembers[]
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+}
+
+model UserSettings {
+  // id                       String       @id @default(uuid())
+  user                     User         @relation(fields: [userId], references: [id])
+  userId                   String       @id @unique
+  onlineStatus             OnlineStatus @default(ONLINE)
+  isPrivate                Boolean      @default(false)
+  canReceiveFriendRequests Boolean      @default(true)
+  updatedAt                DateTime     @updatedAt
+}
+
+model Follows {
+  follower    User     @relation("follower", fields: [followerId], references: [id])
+  followerId  String
+  following   User     @relation("following", fields: [followingId], references: [id])
+  followingId String
+  createdAt   DateTime @default(now())
+
+  @@id([followerId, followingId])
+}
+
+model Requests {
+  requester    User     @relation("requester", fields: [requesterId], references: [id])
+  requesterId  String
+  requesting   User     @relation("requesting", fields: [requestingId], references: [id])
+  requestingId String
+  createdAt    DateTime @default(now())
+
+  @@id([requesterId, requestingId])
+}
+
+model Game {
+  id             String          @id @default(uuid())
+  title          String          @unique
+  logo           String
+  price          Float?
+  offerPrice     Float?
+  currency       Currency?       @default(STORE)
+  offerExpiresAt DateTime?
+  tagLine        String
+  Addon          Addon[]
+  Achievements   Achievement[]
+  Reviews        Review[]
+  LibraryGames   LibraryGames[]
+  FavoriteGames  FavoriteGames[]
+  Organisation   Organisation    @relation(fields: [organisationId], references: [id])
+  organisationId String
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+}
+
+model LibraryGames {
+  id                     String                   @id @default(uuid())
+  User                   User                     @relation(fields: [userId], references: [id])
+  userId                 String
+  Game                   Game                     @relation(fields: [gameId], references: [id])
+  gameId                 String
+  libraryGamesAchivement LibraryGamesAchivement[]
+  isCompleted            Boolean                  @default(false)
+  hoursPlayed            Int                      @default(0)
+  gameProgress           Int                      @default(0)
+  createdAt              DateTime                 @default(now())
+  updatedAt              DateTime                 @updatedAt
+}
+
+model FavoriteGames {
+  User      User     @relation(fields: [userId], references: [id])
+  userId    String
+  Game      Game     @relation(fields: [gameId], references: [id])
+  gameId    String
+  createdAt DateTime @default(now())
+
+  @@id([userId, gameId])
+}
+
+model Addon {
+  id        String           @id @default(uuid())
+  title     String
+  image     String
+  price     Float?
+  currency  Currency?        @default(STORE)
+  grade     String?
+  game      Game             @relation(fields: [gameId], references: [id])
+  gameId    String
+  owner     User?            @relation(fields: [ownerId], references: [id])
+  ownerId   String?
+  favourite FavoriteAddons[]
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+}
+
+model FavoriteAddons {
+  User      User     @relation(fields: [userId], references: [id])
+  userId    String
+  Addon     Addon    @relation(fields: [addonId], references: [id])
+  addonId   String
+  createdAt DateTime @default(now())
+
+  @@id([userId, addonId])
+}
+
+model Achievement {
+  id                     String                   @id @default(uuid())
+  title                  String                   @unique
+  description            String
+  image                  String
+  grade                  String?
+  game                   Game                     @relation(fields: [gameId], references: [id])
+  gameId                 String
+  libraryGamesAchivement LibraryGamesAchivement[]
+  createdAt              DateTime                 @default(now())
+  updatedAt              DateTime                 @updatedAt
+}
+
+model LibraryGamesAchivement {
+  LibraryGames   LibraryGames @relation(fields: [libraryGamesId], references: [id])
+  libraryGamesId String
+  Achievement    Achievement  @relation(fields: [achievementId], references: [id])
+  achievementId  String
+
+  @@id([libraryGamesId, achievementId])
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  content   String?
+  rating    Int
+  game      Game     @relation(fields: [gameId], references: [id])
+  gameId    String
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Organisation {
+  id                  String                @id @default(uuid())
+  name                String                @unique
+  about               String?
+  logo                String?
+  games               Game[]
+  creator             User                  @relation(fields: [creatorId], references: [id])
+  creatorId           String
+  OrganisationMembers OrganisationMembers[]
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+}
+
+model OrganisationMembers {
+  organisation   Organisation @relation(fields: [organisationId], references: [id])
+  organisationId String
+  member         User         @relation(fields: [memberId], references: [id])
+  memberId       String
+  role           String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@id([organisationId, memberId])
 }
