@@ -1,6 +1,7 @@
 type User {
   id: ID!
   publicAddress: String!
+  nonce: Int!
   username: String!
   firstName: String!
   lastName: String
@@ -13,7 +14,7 @@ type User {
   # organisations: UserOrganisations!
   # reviews: [Review]!
   # achievements: [Achievement]!
-  # metriwcs: UserMetrics!
+  # metrics: UserMetrics!
   createdAt: Date!
   updatedAt: Date
 }
@@ -52,6 +53,8 @@ type UserSettings {
 
 input RegisterUserInput {
   publicAddress: String!
+  nonce: Int!
+  signature: String!
   username: String!
   firstName: String!
   profilePicture: String
@@ -74,26 +77,21 @@ input UpdateUserInput {
 input UpdateUserSettingsInput {
   onlineStatus: OnlineStatus
   isPrivate: Boolean
-  canReceiveFriendRequest: Boolean
-}
-
-input DeleteUserInput {
-  id: ID!
-  publicAddress: String!
-  signature: String!
+  canReceiveFriendRequests: Boolean
 }
 
 type Query {
-  user(id: ID!): User
-  users: [User]!
-  me: User!
+  user(id: ID!): User # shouldBeFriends | shouldBeMe
+  users: [User]! # shouldBeFriends
+  me: User! # shouldBeAuthenticated
+  # searching & filtering queries on users (username, publicAddress)
 }
 
 type Mutation {
-  registerUser(input: RegisterUserInput!): User!
-  loginUser(input: LoginUserInput): User!
-  updateUser(input: UpdateUserInput!): User!
-  deleteUser(input: DeleteUserInput): Boolean!
-  sendFriendRequest(id: ID!): Boolean!
-  acceptFriendRequest(id: ID!): Boolean!
+  registerUser(input: RegisterUserInput!): User! # shouldPerformAuth & shouldReturnJWT
+  loginUser(input: LoginUserInput): User! # shouldPerformAuth & shouldReturnJWT
+  updateUser(input: UpdateUserInput!): User! # shouldBeAuthenticated
+  deleteUser(signature: String!): Boolean! # shouldBeAuthenticated & shouldPerformAuth
+  sendFriendRequest(id: ID!): Boolean! # shouldBeAuthenticated
+  acceptFriendRequest(id: ID!): Boolean! # shouldBeAuthenticated
 }

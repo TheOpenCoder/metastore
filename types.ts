@@ -34,12 +34,6 @@ export enum Currency {
   Usdt = 'USDT'
 }
 
-export type DeleteUserInput = {
-  id: Scalars['ID'];
-  publicAddress: Scalars['String'];
-  signature: Scalars['String'];
-};
-
 export enum Features {
   CloudSaves = 'CLOUD_SAVES',
   ControllerSupport = 'CONTROLLER_SUPPORT',
@@ -100,7 +94,7 @@ export type MutationAcceptFriendRequestArgs = {
 
 
 export type MutationDeleteUserArgs = {
-  input?: InputMaybe<DeleteUserInput>;
+  signature: Scalars['String'];
 };
 
 
@@ -149,8 +143,10 @@ export type QueryUserArgs = {
 
 export type RegisterUserInput = {
   firstName: Scalars['String'];
+  nonce: Scalars['Int'];
   profilePicture?: InputMaybe<Scalars['String']>;
   publicAddress: Scalars['String'];
+  signature: Scalars['String'];
   username: Scalars['String'];
 };
 
@@ -170,7 +166,7 @@ export type UpdateUserInput = {
 };
 
 export type UpdateUserSettingsInput = {
-  canReceiveFriendRequest?: InputMaybe<Scalars['Boolean']>;
+  canReceiveFriendRequests?: InputMaybe<Scalars['Boolean']>;
   isPrivate?: InputMaybe<Scalars['Boolean']>;
   onlineStatus?: InputMaybe<OnlineStatus>;
 };
@@ -182,6 +178,7 @@ export type User = {
   firstName: Scalars['String'];
   id: Scalars['ID'];
   lastName?: Maybe<Scalars['String']>;
+  nonce: Scalars['Int'];
   profilePicture?: Maybe<Scalars['String']>;
   publicAddress: Scalars['String'];
   settings: UserSettings;
@@ -303,7 +300,6 @@ export type ResolversTypes = {
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   Currency: Currency;
   Date: ResolverTypeWrapper<Scalars['Date']>;
-  DeleteUserInput: DeleteUserInput;
   Features: Features;
   Game: ResolverTypeWrapper<Game>;
   Genre: Genre;
@@ -334,7 +330,6 @@ export type ResolversParentTypes = {
   Addon: Addon;
   Boolean: Scalars['Boolean'];
   Date: Scalars['Date'];
-  DeleteUserInput: DeleteUserInput;
   Game: Game;
   ID: Scalars['ID'];
   Int: Scalars['Int'];
@@ -380,7 +375,7 @@ export type GameResolvers<ContextType = any, ParentType extends ResolversParentT
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   acceptFriendRequest?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationAcceptFriendRequestArgs, 'id'>>;
-  deleteUser?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, Partial<MutationDeleteUserArgs>>;
+  deleteUser?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteUserArgs, 'signature'>>;
   loginUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, Partial<MutationLoginUserArgs>>;
   registerUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationRegisterUserArgs, 'input'>>;
   sendFriendRequest?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationSendFriendRequestArgs, 'id'>>;
@@ -411,6 +406,7 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   firstName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   lastName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  nonce?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   profilePicture?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   publicAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   settings?: Resolver<ResolversTypes['UserSettings'], ParentType, ContextType>;

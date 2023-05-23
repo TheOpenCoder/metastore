@@ -14,12 +14,12 @@ CREATE TYPE "Features" AS ENUM ('SINGLE_PLAYER', 'MULTI_PLAYER', 'CO_OP', 'CROSS
 CREATE TABLE "User" (
     "id" STRING NOT NULL,
     "publicAddress" STRING NOT NULL,
+    "nonce" INT4 NOT NULL,
     "username" STRING NOT NULL,
     "firstName" STRING NOT NULL,
     "lastName" STRING,
     "bio" STRING,
     "profilePicture" STRING,
-    "userSettingsId" STRING NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -28,13 +28,13 @@ CREATE TABLE "User" (
 
 -- CreateTable
 CREATE TABLE "UserSettings" (
-    "id" STRING NOT NULL,
+    "userId" STRING NOT NULL,
     "onlineStatus" "OnlineStatus" NOT NULL DEFAULT 'ONLINE',
     "isPrivate" BOOL NOT NULL DEFAULT false,
     "canReceiveFriendRequests" BOOL NOT NULL DEFAULT true,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "UserSettings_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "UserSettings_pkey" PRIMARY KEY ("userId")
 );
 
 -- CreateTable
@@ -186,9 +186,6 @@ CREATE UNIQUE INDEX "User_publicAddress_key" ON "User"("publicAddress");
 CREATE UNIQUE INDEX "User_username_key" ON "User"("username");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "User_userSettingsId_key" ON "User"("userSettingsId");
-
--- CreateIndex
 CREATE UNIQUE INDEX "Game_title_key" ON "Game"("title");
 
 -- CreateIndex
@@ -198,7 +195,7 @@ CREATE UNIQUE INDEX "Achievement_title_key" ON "Achievement"("title");
 CREATE UNIQUE INDEX "Organisation_name_key" ON "Organisation"("name");
 
 -- AddForeignKey
-ALTER TABLE "User" ADD CONSTRAINT "User_userSettingsId_fkey" FOREIGN KEY ("userSettingsId") REFERENCES "UserSettings"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "UserSettings" ADD CONSTRAINT "UserSettings_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Follows" ADD CONSTRAINT "Follows_followerId_fkey" FOREIGN KEY ("followerId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
