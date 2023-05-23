@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import jwt from 'jsonwebtoken';
+import * as jwt from 'jsonwebtoken';
 
 export interface Context {
   prisma: PrismaClient;
@@ -22,7 +22,8 @@ export const context = ({ req }: { req: Request }): Context => {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET as jwt.Secret);
+    console.log(decoded);
 
     // TODO: if jwt expired, return null for auth
 
@@ -31,6 +32,7 @@ export const context = ({ req }: { req: Request }): Context => {
       authUser: decoded as Context['authUser'],
     };
   } catch (err) {
+    console.log(err);
     return {
       prisma: new PrismaClient(),
       authUser: null,

@@ -83,13 +83,13 @@ input UpdateUserSettingsInput {
 type Query {
   user(id: ID!): User # shouldBeFriends | shouldBeMe
   users: [User]! # shouldBeFriends
-  me: User! # shouldBeAuthenticated
+  me: User! # xshouldBeAuthenticated
   # searching & filtering queries on users (username, publicAddress)
 }
 
 type Mutation {
-  registerUser(input: RegisterUserInput!): User! # shouldPerformAuth & shouldReturnJWT
-  loginUser(input: LoginUserInput): User! # shouldPerformAuth & shouldReturnJWT
+  registerUser(input: RegisterUserInput!): User! # xshouldPerformAuth & xshouldReturnJWT
+  loginUser(input: LoginUserInput!): User! # xshouldPerformAuth & shouldReturnJWT
   updateUser(input: UpdateUserInput!): User! # shouldBeAuthenticated
   deleteUser(signature: String!): Boolean! # shouldBeAuthenticated & shouldPerformAuth
   sendFriendRequest(id: ID!): Boolean! # shouldBeAuthenticated

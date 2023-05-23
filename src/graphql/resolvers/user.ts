@@ -2,13 +2,28 @@ import { PrismaClient } from '@prisma/client';
 import {
   Resolvers,
   RegisterUserInput,
+  UpdateUserInput,
   OnlineStatus,
+  UserSettings,
   User,
+  LoginUserInput,
 } from '../../../types';
-
-const prisma = new PrismaClient();
-
 import * as _ from 'lodash';
+import { GraphQLError } from 'graphql';
+
+interface Context {
+  prisma: PrismaClient;
+  authUser: {
+    id: string;
+    publicAddress: string;
+    username: string;
+  } | null;
+  req: Request;
+  res: Response;
+}
+
+import { verifiedSignature, generateJWT } from '../../auth';
+import { generateNonce } from './../../utils';
 
 // const user: User = {
 //   id: '1',
@@ -18,10 +33,10 @@ import * as _ from 'lodash';
 //   lastName: 'test',
 //   bio: 'test',
 //   profilePicture: 'https://www.google.com',
-//   userSettings: {
+//   settings: {
 //     onlineStatus: OnlineStatus.Away,
 //     isPrivate: true,
-//     canReceiveFriendRequest: true,
+//     canReceiveFriendRequests: true,
 //   },
 //   // friends: [],
 //   // friendRequests: [],
@@ -42,68 +57,227 @@ import * as _ from 'lodash';
 
 const resolvers: Resolvers = {
   Query: {
-    // @ts-expect-error
-    user: async (_: {}, { id }: { id: string }) => {
-      const user = await prisma.user.findUnique({
-        where: {
-          id,
-        },
-      });
+    user: async (root: {}, { id }: { id: string }, { prisma }: Context) => {
+      try {
+        const user = await prisma.user.findUnique({
+          where: {
+            id,
+          },
+        });
 
-      return user;
+        if (!user) throw new GraphQLError("User doesn't exist");
+
+        return user as User;
+      } catch (err) {
+        throw new GraphQLError('Error fetching user');
+      }
     },
 
-    // @ts-expect-error
-    users: async () => {
-      const users = await prisma.user.findMany();
+    users: async (root: {}, args: {}, { prisma }: Context) => {
+      try {
+        const users = await prisma.user.findMany();
 
-      _.every(users, (user) => {
-        console.log(user.userSettingsId);
-      });
+        return users as [User];
+      } catch (err) {
+        throw new GraphQLError("Can't fetch users");
+      }
+    },
 
-      const newUsers = _.map(users, (user) => _.omit(user, 'userSettingsId'));
-      console.log(newUsers);
+    me: async (root: {}, args: {}, { prisma, authUser }: Context) => {
+      if (!authUser) throw new GraphQLError('Not Authenticated');
+      const { id } = authUser;
 
-      return newUsers;
+      try {
+        const user = await prisma.user.findUnique({
+          where: {
+            id,
+          },
+        });
+
+        if (!user) throw new GraphQLError("User doesn't exist");
+
+        return user as User;
+      } catch (err) {
+        throw new GraphQLError('Error fetching user');
+      }
     },
   },
 
   Mutation: {
-    // @ts-expect-error
-    registerUser: async (_: {}, { input }: { input: RegisterUserInput }) => {
-      const { publicAddress, username, firstName, profilePicture } = input;
-      const user = await prisma.user.create({
-        data: {
+    registerUser: async (
+      root: {},
+      { input }: { input: RegisterUserInput },
+      { prisma, res }: Context,
+    ) => {
+      const {
+        publicAddress,
+        nonce,
+        signature,
+        username,
+        firstName,
+        profilePicture,
+      } = input;
+
+      // verify signature else throw error
+      if (!verifiedSignature(publicAddress, nonce, signature))
+        throw new GraphQLError('Invalid signature');
+
+      // generate new random nonce
+      const randomNonce = generateNonce();
+
+      try {
+        const user = await prisma.user.create({
+          data: {
+            publicAddress,
+            nonce: randomNonce,
+            username,
+            firstName,
+            profilePicture,
+            // must create user settings here
+            userSettings: {
+              create: {},
+            },
+          },
+        });
+
+        // @ts-ignore
+        res.headers['x-auth-token'] = generateJWT(user);
+
+        return user as User;
+      } catch (err) {
+        // TODO: handle errors
+        // publicAddress taken (which implies user already exists)
+        // username taken
+
+        throw new GraphQLError('Error creating user');
+      }
+    },
+
+    loginUser: async (
+      root: {},
+      { input }: { input: LoginUserInput },
+      { prisma, res }: Context,
+    ) => {
+      const { publicAddress, signature } = input;
+
+      const { nonce, id } = (await prisma.user.findUnique({
+        where: {
           publicAddress,
-          username,
-          firstName,
-          profilePicture,
+        },
+
+        select: {
+          nonce: true,
+          id: true,
+        },
+      })) as { nonce: number; id: string };
+
+      // verify signature else throw error
+      if (!verifiedSignature(publicAddress, nonce, signature))
+        throw new GraphQLError('Invalid signature');
+
+      try {
+        const user = await prisma.user.findUnique({
+          where: {
+            id,
+          },
+        });
+
+        // @ts-ignore
+        res.headers['x-auth-token'] = generateJWT(user);
+
+        return user as User;
+      } catch (err) {
+        throw new GraphQLError('Error logging in user');
+      }
+    },
+
+    updateUser: async (
+      root: {},
+      { input }: { input: UpdateUserInput },
+      { prisma, authUser }: Context,
+    ) => {
+      const {
+        username,
+        firstName,
+        lastName,
+        bio,
+        profilePicture,
+        userSettings,
+      } = input;
+
+      if (!authUser) throw new GraphQLError('Not Authenticated');
+      const { id } = authUser;
+
+      const user = await prisma.user.update({
+        where: { id },
+        data: {
+          username: username || undefined,
+          firstName: firstName || undefined,
+          lastName: lastName || undefined,
+          bio: bio || undefined,
+          profilePicture: profilePicture || undefined,
           userSettings: {
-            create: {},
+            update: {
+              onlineStatus: userSettings?.onlineStatus || undefined,
+              isPrivate: userSettings?.isPrivate || undefined,
+              canReceiveFriendRequests:
+                userSettings?.canReceiveFriendRequests || undefined,
+            },
           },
         },
       });
 
-      return user;
+      return user as User;
     },
+
+    deleteUser: async (
+      root: {},
+      { signature }: { signature: string },
+      { prisma, authUser }: Context,
+    ) => {
+      // TODO: get nonce from db & verify signature else throw error
+
+      if (!authUser) throw new GraphQLError('Not Authenticated');
+      const { id } = authUser;
+
+      try {
+        const user = await prisma.user.delete({
+          where: { id },
+        });
+
+        return true;
+      } catch (err) {
+        throw new GraphQLError('Error deleting user');
+      }
+    },
+
+    // sendFriendRequest: async (_: {}, { id }: { id: string }) => {
+    //   const user = await prisma.user.update({
+    //     where: {
+    //       id,
+    //     },
+    //     data: {
+    //       friendRequests: {
+    //         create: {},
+    //       },
+    //     },
+    //   });
+
+    //   console.log(user);
+
+    //   return user;
+    // },
   },
 
   User: {
-    // @ts-expect-error
-    settings: async (parent: any) => {
-      console.log('parent id', parent.id);
-
+    settings: async (parent: User, args: {}, { prisma }: Context) => {
       const userSettings = await prisma.userSettings.findUnique({
         where: {
-          id: parent.userSettingsId,
+          userId: parent.id,
         },
       });
 
-      return _.pick(userSettings, [
-        'onlineStatus',
-        'isPrivate',
-        'canReceiveFriendRequests',
-      ]);
+      return _.omit(userSettings, ['userId', 'updatedAt']) as UserSettings;
     },
   },
 };

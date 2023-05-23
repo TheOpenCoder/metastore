@@ -1,4 +1,4 @@
-import { shield, rule } from 'graphql-shield';
+import { shield, rule, allow, deny } from 'graphql-shield';
 import { GraphQLError } from 'graphql';
 
 export const isAuthenticated = rule()(async (parent, args, ctx, info) => {
@@ -6,14 +6,17 @@ export const isAuthenticated = rule()(async (parent, args, ctx, info) => {
   return true;
 });
 
-export const permissions = shield({
-  Query: {
-    me: isAuthenticated,
-  },
-  Mutation: {
-    updateUser: isAuthenticated,
-    deleteUser: isAuthenticated,
-    sendFriendRequest: isAuthenticated,
-    acceptFriendRequest: isAuthenticated,
-  },
-});
+export const permissions =
+  process.env.NODE_ENV === 'development'
+    ? shield({})
+    : shield({
+        Query: {
+          me: isAuthenticated,
+        },
+        Mutation: {
+          updateUser: isAuthenticated,
+          deleteUser: isAuthenticated,
+          sendFriendRequest: isAuthenticated,
+          acceptFriendRequest: isAuthenticated,
+        },
+      });
