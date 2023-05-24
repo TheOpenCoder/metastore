@@ -89,7 +89,7 @@ export type Mutation = {
 
 
 export type MutationAcceptFriendRequestArgs = {
-  id: Scalars['ID'];
+  from: Scalars['ID'];
 };
 
 
@@ -109,7 +109,7 @@ export type MutationRegisterUserArgs = {
 
 
 export type MutationSendFriendRequestArgs = {
-  id: Scalars['ID'];
+  to: Scalars['ID'];
 };
 
 
@@ -142,7 +142,7 @@ export type QueryUserArgs = {
 };
 
 export type RegisterUserInput = {
-  firstName: Scalars['String'];
+  firstName?: InputMaybe<Scalars['String']>;
   nonce: Scalars['Int'];
   profilePicture?: InputMaybe<Scalars['String']>;
   publicAddress: Scalars['String'];
@@ -161,7 +161,7 @@ export type UpdateUserInput = {
   firstName?: InputMaybe<Scalars['String']>;
   lastName?: InputMaybe<Scalars['String']>;
   profilePicture?: InputMaybe<Scalars['String']>;
-  userSettings?: InputMaybe<UpdateUserSettingsInput>;
+  settings?: InputMaybe<UpdateUserSettingsInput>;
   username?: InputMaybe<Scalars['String']>;
 };
 
@@ -182,6 +182,7 @@ export type User = {
   profilePicture?: Maybe<Scalars['String']>;
   publicAddress: Scalars['String'];
   settings: UserSettings;
+  socials: UserSocials;
   updatedAt?: Maybe<Scalars['Date']>;
   username: Scalars['String'];
 };
@@ -374,11 +375,11 @@ export type GameResolvers<ContextType = any, ParentType extends ResolversParentT
 };
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
-  acceptFriendRequest?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationAcceptFriendRequestArgs, 'id'>>;
+  acceptFriendRequest?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationAcceptFriendRequestArgs, 'from'>>;
   deleteUser?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteUserArgs, 'signature'>>;
   loginUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationLoginUserArgs, 'input'>>;
   registerUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationRegisterUserArgs, 'input'>>;
-  sendFriendRequest?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationSendFriendRequestArgs, 'id'>>;
+  sendFriendRequest?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationSendFriendRequestArgs, 'to'>>;
   updateUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationUpdateUserArgs, 'input'>>;
 };
 
@@ -410,6 +411,7 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   profilePicture?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   publicAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   settings?: Resolver<ResolversTypes['UserSettings'], ParentType, ContextType>;
+  socials?: Resolver<ResolversTypes['UserSocials'], ParentType, ContextType>;
   updatedAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   username?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;

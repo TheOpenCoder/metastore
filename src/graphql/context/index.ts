@@ -11,6 +11,7 @@ export interface Context {
 }
 
 export const context = ({ req }: { req: Request }): Context => {
+  // TODO: use cookie instead of header
   // @ts-ignore
   const token: string | undefined | null = req.headers['x-auth-token'];
 
@@ -23,7 +24,6 @@ export const context = ({ req }: { req: Request }): Context => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET as jwt.Secret);
-    console.log(decoded);
 
     // TODO: if jwt expired, return null for auth
 
@@ -32,7 +32,6 @@ export const context = ({ req }: { req: Request }): Context => {
       authUser: decoded as Context['authUser'],
     };
   } catch (err) {
-    console.log(err);
     return {
       prisma: new PrismaClient(),
       authUser: null,

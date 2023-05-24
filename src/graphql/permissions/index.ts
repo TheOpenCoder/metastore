@@ -6,17 +6,17 @@ export const isAuthenticated = rule()(async (parent, args, ctx, info) => {
   return true;
 });
 
-export const permissions =
-  process.env.NODE_ENV === 'development'
-    ? shield({})
-    : shield({
-        Query: {
-          me: isAuthenticated,
-        },
-        Mutation: {
-          updateUser: isAuthenticated,
-          deleteUser: isAuthenticated,
-          sendFriendRequest: isAuthenticated,
-          acceptFriendRequest: isAuthenticated,
-        },
-      });
+export const permissions = shield(
+  {
+    Query: {
+      me: isAuthenticated,
+    },
+    Mutation: {
+      updateUser: isAuthenticated,
+      deleteUser: isAuthenticated,
+      sendFriendRequest: isAuthenticated,
+      acceptFriendRequest: isAuthenticated,
+    },
+  },
+  { allowExternalErrors: true },
+);

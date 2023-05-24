@@ -8,7 +8,7 @@ type User {
   bio: String
   profilePicture: String
   settings: UserSettings!
-  # socials: UserSocials!
+  socials: UserSocials!
   # games: UserGames!
   # addons: UserAddons!
   # organisations: UserOrganisations!
@@ -56,7 +56,7 @@ input RegisterUserInput {
   nonce: Int!
   signature: String!
   username: String!
-  firstName: String!
+  firstName: String
   profilePicture: String
 }
 
@@ -71,7 +71,7 @@ input UpdateUserInput {
   lastName: String
   bio: String
   profilePicture: String
-  userSettings: UpdateUserSettingsInput
+  settings: UpdateUserSettingsInput
 }
 
 input UpdateUserSettingsInput {
@@ -92,6 +92,6 @@ type Mutation {
   loginUser(input: LoginUserInput!): User! # xshouldPerformAuth & shouldReturnJWT
   updateUser(input: UpdateUserInput!): User! # shouldBeAuthenticated
   deleteUser(signature: String!): Boolean! # shouldBeAuthenticated & shouldPerformAuth
-  sendFriendRequest(id: ID!): Boolean! # shouldBeAuthenticated
-  acceptFriendRequest(id: ID!): Boolean! # shouldBeAuthenticated
+  sendFriendRequest(to: ID!): Boolean! # shouldBeAuthenticated
+  acceptFriendRequest(from: ID!): Boolean! # shouldBeAuthenticated
 }

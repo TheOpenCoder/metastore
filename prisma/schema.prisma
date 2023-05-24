@@ -57,7 +57,7 @@ model User {
   publicAddress       String                @unique
   nonce               Int
   username            String                @unique
-  firstName           String
+  firstName           String?
   lastName            String?
   bio                 String?
   profilePicture      String?

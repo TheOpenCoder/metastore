@@ -15,14 +15,10 @@ const schema = createSchema({
   resolvers,
 });
 
-console.log('should add log middleware');
-
-
 const schemaWithPermissions = applyMiddleware(schema, permissions);
 
 const app = express();
 const yoga = createYoga({
-  // @ts-ignore
   schema: schemaWithPermissions,
   context,
 });
