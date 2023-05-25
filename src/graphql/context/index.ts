@@ -7,7 +7,9 @@ import { verifyJWT } from '../../auth/jwt';
 import { User } from '../../types/codegen.types';
 import Context from '../../types/context';
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+  log: ['query'],
+});
 const userLoader = new DataLoader<string, User>((ids: readonly string[]) =>
   batchUsers(ids, prisma),
 );
@@ -19,7 +21,7 @@ export const context = ({
   req: Request;
   res: Response;
 }): Context => {
-  // TODO: use cookie instead of header
+  // TODO: use cookie instead
   // @ts-expect-error
   const token: string | undefined | null = req.headers['x-auth-token'];
 

@@ -80,15 +80,22 @@ export type LoginUserInput = {
 export type Mutation = {
   __typename?: 'Mutation';
   acceptFriendRequest: Scalars['Boolean'];
+  declineFriendRequest: Scalars['Boolean'];
   deleteUser: Scalars['Boolean'];
   loginUser: User;
   registerUser: User;
+  removeFriend: Scalars['Boolean'];
   sendFriendRequest: Scalars['Boolean'];
   updateUser: User;
 };
 
 
 export type MutationAcceptFriendRequestArgs = {
+  from: Scalars['ID'];
+};
+
+
+export type MutationDeclineFriendRequestArgs = {
   from: Scalars['ID'];
 };
 
@@ -105,6 +112,11 @@ export type MutationLoginUserArgs = {
 
 export type MutationRegisterUserArgs = {
   input: RegisterUserInput;
+};
+
+
+export type MutationRemoveFriendArgs = {
+  friend: Scalars['ID'];
 };
 
 
@@ -157,6 +169,12 @@ export type Review = {
   name?: Maybe<Scalars['String']>;
 };
 
+export type Tournament = {
+  __typename?: 'Tournament';
+  id: Scalars['ID'];
+  name: Scalars['String'];
+};
+
 export type UpdateUserInput = {
   bio?: InputMaybe<Scalars['String']>;
   firstName?: InputMaybe<Scalars['String']>;
@@ -174,14 +192,20 @@ export type UpdateUserSettingsInput = {
 
 export type User = {
   __typename?: 'User';
+  achievements: Array<Maybe<Achievement>>;
+  addons: UserAddons;
   bio?: Maybe<Scalars['String']>;
   createdAt: Scalars['Date'];
   firstName?: Maybe<Scalars['String']>;
+  games: UserGames;
   id: Scalars['ID'];
   lastName?: Maybe<Scalars['String']>;
+  metrics: UserMetrics;
   nonce: Scalars['Int'];
+  organisations: UserOrganisations;
   profilePicture?: Maybe<Scalars['String']>;
   publicAddress: Scalars['String'];
+  reviews: Array<Maybe<Review>>;
   settings: UserSettings;
   socials: UserSocials;
   updatedAt?: Maybe<Scalars['Date']>;
@@ -315,6 +339,7 @@ export type ResolversTypes = {
   RegisterUserInput: RegisterUserInput;
   Review: ResolverTypeWrapper<Review>;
   String: ResolverTypeWrapper<Scalars['String']>;
+  Tournament: ResolverTypeWrapper<Tournament>;
   UpdateUserInput: UpdateUserInput;
   UpdateUserSettingsInput: UpdateUserSettingsInput;
   User: ResolverTypeWrapper<User>;
@@ -342,6 +367,7 @@ export type ResolversParentTypes = {
   RegisterUserInput: RegisterUserInput;
   Review: Review;
   String: Scalars['String'];
+  Tournament: Tournament;
   UpdateUserInput: UpdateUserInput;
   UpdateUserSettingsInput: UpdateUserSettingsInput;
   User: User;
@@ -377,9 +403,11 @@ export type GameResolvers<ContextType = any, ParentType extends ResolversParentT
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   acceptFriendRequest?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationAcceptFriendRequestArgs, 'from'>>;
+  declineFriendRequest?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeclineFriendRequestArgs, 'from'>>;
   deleteUser?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteUserArgs, 'signature'>>;
   loginUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationLoginUserArgs, 'input'>>;
   registerUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationRegisterUserArgs, 'input'>>;
+  removeFriend?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationRemoveFriendArgs, 'friend'>>;
   sendFriendRequest?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationSendFriendRequestArgs, 'to'>>;
   updateUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationUpdateUserArgs, 'input'>>;
 };
@@ -403,15 +431,27 @@ export type ReviewResolvers<ContextType = any, ParentType extends ResolversParen
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type TournamentResolvers<ContextType = any, ParentType extends ResolversParentTypes['Tournament'] = ResolversParentTypes['Tournament']> = {
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
+  achievements?: Resolver<Array<Maybe<ResolversTypes['Achievement']>>, ParentType, ContextType>;
+  addons?: Resolver<ResolversTypes['UserAddons'], ParentType, ContextType>;
   bio?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   firstName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  games?: Resolver<ResolversTypes['UserGames'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   lastName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  metrics?: Resolver<ResolversTypes['UserMetrics'], ParentType, ContextType>;
   nonce?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  organisations?: Resolver<ResolversTypes['UserOrganisations'], ParentType, ContextType>;
   profilePicture?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   publicAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  reviews?: Resolver<Array<Maybe<ResolversTypes['Review']>>, ParentType, ContextType>;
   settings?: Resolver<ResolversTypes['UserSettings'], ParentType, ContextType>;
   socials?: Resolver<ResolversTypes['UserSocials'], ParentType, ContextType>;
   updatedAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
@@ -466,6 +506,7 @@ export type Resolvers<ContextType = any> = {
   Organisation?: OrganisationResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Review?: ReviewResolvers<ContextType>;
+  Tournament?: TournamentResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
   UserAddons?: UserAddonsResolvers<ContextType>;
   UserGames?: UserGamesResolvers<ContextType>;

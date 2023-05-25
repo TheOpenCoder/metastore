@@ -70,51 +70,9 @@ type Review {
   name: String
 }
 
-type User {
+type Tournament {
   id: ID!
-  publicAddress: String!
-  nonce: Int!
-  username: String!
-  firstName: String
-  lastName: String
-  bio: String
-  profilePicture: String
-  settings: UserSettings!
-  socials: UserSocials!
-  createdAt: Date!
-  updatedAt: Date
-}
-
-type UserSocials {
-  friends: [User]!
-  friendRequests: [User]!
-}
-
-type UserGames {
-  library: [Game]!
-  favorite: [Game]!
-}
-
-type UserAddons {
-  library: [Addon]!
-  favorite: [Addon]!
-}
-
-type UserOrganisations {
-  created: [Organisation]!
-  joined: [Organisation]!
-}
-
-type UserMetrics {
-  totalAchievements: Int
-  totalHoursPlayed: Int
-  totalFriends: Int
-}
-
-type UserSettings {
-  onlineStatus: OnlineStatus!
-  isPrivate: Boolean
-  canReceiveFriendRequests: Boolean
+  name: String!
 }
 
 input RegisterUserInput {
@@ -146,13 +104,6 @@ input UpdateUserSettingsInput {
   canReceiveFriendRequests: Boolean
 }
 
-type Query {
-  user(id: ID!): User
-  users: [User]!
-  me: User!
-  db: Boolean
-}
-
 type Mutation {
   registerUser(input: RegisterUserInput!): User!
   loginUser(input: LoginUserInput!): User!
@@ -160,6 +111,68 @@ type Mutation {
   deleteUser(signature: String!): Boolean!
   sendFriendRequest(to: ID!): Boolean!
   acceptFriendRequest(from: ID!): Boolean!
+  declineFriendRequest(from: ID!): Boolean!
+  removeFriend(friend: ID!): Boolean!
+}
+
+type Query {
+  user(id: ID!): User
+  users: [User]!
+  me: User!
+  db: Boolean
+}
+
+type User {
+  id: ID!
+  publicAddress: String!
+  nonce: Int!
+  username: String!
+  firstName: String
+  lastName: String
+  bio: String
+  profilePicture: String
+  settings: UserSettings!
+  socials: UserSocials!
+  games: UserGames!
+  addons: UserAddons!
+  organisations: UserOrganisations!
+  reviews: [Review]!
+  achievements: [Achievement]!
+  metrics: UserMetrics!
+  createdAt: Date!
+  updatedAt: Date
+}
+
+type UserSettings {
+  onlineStatus: OnlineStatus!
+  isPrivate: Boolean
+  canReceiveFriendRequests: Boolean
+}
+
+type UserSocials {
+  friends: [User]!
+  friendRequests: [User]!
+}
+
+type UserGames {
+  library: [Game]!
+  favorite: [Game]!
+}
+
+type UserAddons {
+  library: [Addon]!
+  favorite: [Addon]!
+}
+
+type UserOrganisations {
+  created: [Organisation]!
+  joined: [Organisation]!
+}
+
+type UserMetrics {
+  totalAchievements: Int
+  totalHoursPlayed: Int
+  totalFriends: Int
 }
 
 schema {

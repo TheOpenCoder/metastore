@@ -9,5 +9,3 @@ const resolversArray = loadFilesSync(path.join(__dirname), {
 const resolvers = mergeResolvers(resolversArray);
 
 export default resolvers;
-
-// mergeResolvers returns the merged object with "default" key which graphql-yoga doesn't like

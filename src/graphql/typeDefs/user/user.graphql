@@ -9,14 +9,20 @@ type User {
   profilePicture: String
   settings: UserSettings!
   socials: UserSocials!
-  # games: UserGames!
-  # addons: UserAddons!
-  # organisations: UserOrganisations!
-  # reviews: [Review]!
-  # achievements: [Achievement]!
-  # metrics: UserMetrics!
+  games: UserGames!
+  addons: UserAddons!
+  organisations: UserOrganisations!
+  reviews: [Review]!
+  achievements: [Achievement]!
+  metrics: UserMetrics!
   createdAt: Date!
   updatedAt: Date
+}
+
+type UserSettings {
+  onlineStatus: OnlineStatus!
+  isPrivate: Boolean
+  canReceiveFriendRequests: Boolean
 }
 
 type UserSocials {
@@ -43,10 +49,4 @@ type UserMetrics {
   totalAchievements: Int
   totalHoursPlayed: Int
   totalFriends: Int
-}
-
-type UserSettings {
-  onlineStatus: OnlineStatus!
-  isPrivate: Boolean
-  canReceiveFriendRequests: Boolean
 }

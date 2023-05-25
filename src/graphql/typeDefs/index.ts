@@ -9,9 +9,3 @@ const typeDefsArray = loadFilesSync(path.join(__dirname), {
 const typeDefs = mergeTypeDefs(typeDefsArray);
 
 export default typeDefs;
-
-// Use below code to generate a single file with all the type definitions
-// import * as fs from 'fs';
-// import { print } from 'graphql';
-// const printedTypeDefs = print(types);
-// fs.writeFileSync('joined.graphql', printedTypeDefs);

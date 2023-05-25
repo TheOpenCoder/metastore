@@ -22,7 +22,7 @@ const resolvers: Resolvers = {
       }
     },
 
-    users: async (root: {}, args: {}, { prisma, authUser }: Context) => {
+    users: async (root: {}, args: {}, { prisma }: Context) => {
       try {
         const users = await prisma.user.findMany({});
 
@@ -30,11 +30,6 @@ const resolvers: Resolvers = {
       } catch (err) {
         throw new GraphQLError('Error fetching users');
       }
-      // const filteredUsers = localUsers.filter(
-      //   (user) => user.id != '4' && user.id != '5',
-      // );
-      // const newUser = _.map(filteredUsers, (user) => ({ id: user.id }));
-      // return newUser as [User];
     },
 
     me: async (root: {}, args: {}, { prisma, authUser }: Context) => {
