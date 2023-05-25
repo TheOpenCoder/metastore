@@ -176,7 +176,7 @@ export type User = {
   __typename?: 'User';
   bio?: Maybe<Scalars['String']>;
   createdAt: Scalars['Date'];
-  firstName: Scalars['String'];
+  firstName?: Maybe<Scalars['String']>;
   friends: Array<Maybe<User>>;
   id: Scalars['ID'];
   lastName?: Maybe<Scalars['String']>;
@@ -406,7 +406,7 @@ export type ReviewResolvers<ContextType = any, ParentType extends ResolversParen
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
   bio?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
-  firstName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  firstName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   friends?: Resolver<Array<Maybe<ResolversTypes['User']>>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   lastName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;

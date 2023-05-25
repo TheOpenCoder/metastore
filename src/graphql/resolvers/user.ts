@@ -1,4 +1,8 @@
-import { PrismaClient } from '@prisma/client';
+import * as _ from 'lodash';
+import { GraphQLError } from 'graphql';
+import { PrismaClient, User as PrismaUser } from '@prisma/client';
+import DataLoader from 'dataloader';
+
 import {
   Resolvers,
   RegisterUserInput,
@@ -8,9 +12,10 @@ import {
   LoginUserInput,
   OnlineStatus,
 } from '../../../types';
-import * as _ from 'lodash';
-import { GraphQLError } from 'graphql';
+import { verifiedSignature, generateJWT } from '../../auth';
+import { generateNonce } from './../../utils';
 
+// types
 interface Context {
   prisma: PrismaClient;
   authUser: {
@@ -20,128 +25,8 @@ interface Context {
   } | null;
   req: Request;
   res: Response;
+  userLoader: DataLoader<string, any, string>;
 }
-
-import * as DataLoader from 'dataloader';
-
-import { verifiedSignature, generateJWT } from '../../auth';
-import { generateNonce } from './../../utils';
-
-const getUsers = async (ids: readonly string[]) => {
-  console.log('getUser', ids);
-  const users = localUsers.filter((user) => ids.includes(user.id));
-
-  console.log(users);
-
-  return ids.map((id) => users.find((user) => user.id === id)) as User[];
-};
-
-const userLoader = new DataLoader<string, User>((ids: readonly string[]) => {
-  console.log('userLoader', ids);
-
-  return getUsers(ids);
-});
-
-const localUsers: [User] = [
-  {
-    id: '1',
-    publicAddress: '0x1',
-    username: '1',
-    firstName: 'test',
-    lastName: 'test',
-    bio: 'test',
-    profilePicture: 'https://www.google.com',
-    settings: {
-      onlineStatus: OnlineStatus.Away,
-      isPrivate: true,
-      canReceiveFriendRequests: true,
-    },
-    // @ts-expect-error
-    friends: [{ id: '2' }, { id: '3' }, { id: '4' }],
-    createdAt: '2021-08-01T00:00:00.000Z',
-    updatedAt: '2021-08-01T00:00:00.000Z',
-    // friendRequests: [],
-    // reviews: [],
-    // achievements: [],
-    // libraryGames: [],
-    // favoriteGames: [],
-    // ownedAddons: [],
-    // favoriteAddons: [],
-    // createdOrgs: [],
-    // joinedOrgs: [],
-    // totalAchievements: null,
-    // totalHoursPlayed: 10,
-    // totalFriends: 2,
-  },
-  {
-    id: '2',
-    publicAddress: '0x2',
-    username: '2',
-    firstName: 'test',
-    lastName: 'test',
-    bio: 'test',
-    profilePicture: 'https://www.google.com',
-    settings: {
-      onlineStatus: OnlineStatus.Online,
-      isPrivate: true,
-      canReceiveFriendRequests: true,
-    },
-    friends: [{ id: '1' }, { id: '4' }],
-    createdAt: '2021-08-01T00:00:00.000Z',
-    updatedAt: '2021-08-01T00:00:00.000Z',
-  },
-  {
-    id: '3',
-    publicAddress: '0x3',
-    username: '3',
-    firstName: 'test',
-    lastName: 'test',
-    bio: 'test',
-    profilePicture: 'https://www.google.com',
-    settings: {
-      onlineStatus: OnlineStatus.Away,
-      isPrivate: true,
-      canReceiveFriendRequests: true,
-    },
-    friends: [{ id: '1' }, { id: '4' }, { id: '5' }],
-    createdAt: '2021-08-01T00:00:00.000Z',
-    updatedAt: '2021-08-01T00:00:00.000Z',
-  },
-  {
-    id: '4',
-    publicAddress: '0x4',
-    username: '4',
-    firstName: 'test',
-    lastName: 'test',
-    bio: 'test',
-    profilePicture: 'https://www.google.com',
-    settings: {
-      onlineStatus: OnlineStatus.Offline,
-      isPrivate: true,
-      canReceiveFriendRequests: true,
-    },
-    friends: [{ id: '1' }, { id: '2' }, { id: '3' }],
-    createdAt: '2021-08-01T00:00:00.000Z',
-    updatedAt: '2021-08-01T00:00:00.000Z',
-  },
-  {
-    id: '5',
-    publicAddress: '0x5',
-    username: '5',
-    firstName: 'test',
-    lastName: 'test',
-    bio: 'test',
-    profilePicture: 'https://www.google.com',
-    settings: {
-      onlineStatus: OnlineStatus.Offline,
-      isPrivate: true,
-      canReceiveFriendRequests: true,
-    },
-    friends: [{ id: '3' }],
-    createdAt: '2021-08-01T00:00:00.000Z',
-    updatedAt: '2021-08-01T00:00:00.000Z',
-  },
-];
 
 const resolvers: Resolvers = {
   Query: {
@@ -162,21 +47,18 @@ const resolvers: Resolvers = {
     },
 
     users: async (root: {}, args: {}, { prisma, authUser }: Context) => {
-      // try {
-      //   const users = await prisma.user.findMany();
+      try {
+        const users = await prisma.user.findMany({});
 
-      //   return users as [User];
-      // } catch (err) {
-      //   throw new GraphQLError('Error fetching users');
-      // }
-
-      const filteredUsers = localUsers.filter(
-        (user) => user.id != '4' && user.id != '5',
-      );
-
-      const newUser = _.map(filteredUsers, (user) => ({ id: user.id }));
-
-      return newUser as [User];
+        return users as [User];
+      } catch (err) {
+        throw new GraphQLError('Error fetching users');
+      }
+      // const filteredUsers = localUsers.filter(
+      //   (user) => user.id != '4' && user.id != '5',
+      // );
+      // const newUser = _.map(filteredUsers, (user) => ({ id: user.id }));
+      // return newUser as [User];
     },
 
     me: async (root: {}, args: {}, { prisma, authUser }: Context) => {
@@ -200,6 +82,16 @@ const resolvers: Resolvers = {
 
     db: async (root: {}, args: {}, { prisma }: Context) => {
       // do db stuff here
+      const result = await prisma.user.findUnique({
+        where: {
+          id: '426b8d28-be41-493b-9716-61bd2414703f',
+        },
+        include: {
+          requestedBy: true,
+        },
+      });
+
+      console.log(result?.requestedBy);
 
       return true;
     },
@@ -428,61 +320,63 @@ const resolvers: Resolvers = {
   },
 
   User: {
-    publicAddress: async (parent: User, args: {}, { authUser }: Context) => {
+    publicAddress: async (parent: User, args: {}, { userLoader }: Context) => {
       const { publicAddress } = await userLoader.load(parent.id);
       return publicAddress;
     },
-    nonce: async (parent: User, args: {}, { authUser }: Context) => {
+
+    nonce: async (parent: User, args: {}, { userLoader }: Context) => {
       const { nonce } = await userLoader.load(parent.id);
       return nonce;
     },
-    username: async (parent: User, args: {}, { authUser }: Context) => {
+
+    username: async (parent: User, args: {}, { userLoader }: Context) => {
       const { username } = await userLoader.load(parent.id);
       return username;
     },
-    firstName: async (parent: User, args: {}, { authUser }: Context) => {
+
+    firstName: async (parent: User, args: {}, { userLoader }: Context) => {
       const { firstName } = await userLoader.load(parent.id);
-      return firstName;
+      return firstName as string;
     },
-    lastName: async (parent: User, args: {}, { authUser }: Context) => {
+
+    lastName: async (parent: User, args: {}, { userLoader }: Context) => {
       const { lastName } = await userLoader.load(parent.id);
       return lastName as string;
     },
-    bio: async (parent: User, args: {}, { authUser }: Context) => {
+
+    bio: async (parent: User, args: {}, { userLoader }: Context) => {
       const { bio } = await userLoader.load(parent.id);
       return bio as string;
     },
-    profilePicture: async (parent: User, args: {}, { authUser }: Context) => {
+
+    profilePicture: async (parent: User, args: {}, { userLoader }: Context) => {
       const { profilePicture } = await userLoader.load(parent.id);
       return profilePicture as string;
     },
-    createdAt: async (parent: User, args: {}, { authUser }: Context) => {
+
+    createdAt: async (parent: User, args: {}, { userLoader }: Context) => {
       const { createdAt } = await userLoader.load(parent.id);
       return createdAt;
     },
-    updatedAt: async (parent: User, args: {}, { authUser }: Context) => {
+
+    updatedAt: async (parent: User, args: {}, { userLoader }: Context) => {
       const { updatedAt } = await userLoader.load(parent.id);
       return updatedAt;
     },
-    settings: async (parent: User, args: {}, { prisma }: Context) => {
-      const { settings } = await userLoader.load(parent.id);
-      return settings;
 
-      // try {
-      //   const userSettings = await prisma.userSettings.findUnique({
-      //     where: {
-      //       userId: parent.id,
-      //     },
-      //   });
-
-      //   return _.omit(userSettings, ['userId', 'updatedAt']) as UserSettings;
-      // } catch (err) {
-      //   throw new GraphQLError('Error fetching user settings');
-      // }
+    settings: async (parent: User, args: {}, { userLoader }: Context) => {
+      const { userSettings } = await userLoader.load(parent.id);
+      return _.omit(userSettings, ['updatedAt', 'userId']) as UserSettings;
     },
-    friends: async (parent: User, args: {}, { prisma }: Context) => {
-      const { friends } = await userLoader.load(parent.id);
-      return friends;
+
+    friends: async (parent: User, args: {}, { userLoader }: Context) => {
+      const { requestedBy } = await userLoader.load(parent.id);
+      const friends = _.map(requestedBy, (request) => ({
+        id: request.requesterId,
+      }));
+
+      return friends as User[];
     },
   },
 };

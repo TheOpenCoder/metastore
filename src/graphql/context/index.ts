@@ -1,5 +1,8 @@
 import { PrismaClient } from '@prisma/client';
 import * as jwt from 'jsonwebtoken';
+import * as DataLoader from 'dataloader';
+import batchUsers from '../../dataloaders/user';
+import { User } from '../../../types';
 
 export interface Context {
   prisma: PrismaClient;
@@ -8,7 +11,13 @@ export interface Context {
     publicAddress: string;
     username: string;
   } | null;
+  userLoader: DataLoader<string, User, string>;
 }
+
+const prisma = new PrismaClient();
+const userLoader = new DataLoader<string, User>((ids: readonly string[]) =>
+  batchUsers(ids, prisma),
+);
 
 export const context = ({ req }: { req: Request }): Context => {
   // TODO: use cookie instead of header
@@ -17,8 +26,9 @@ export const context = ({ req }: { req: Request }): Context => {
 
   if (!token) {
     return {
-      prisma: new PrismaClient(),
+      prisma,
       authUser: null,
+      userLoader,
     };
   }
 
@@ -28,13 +38,15 @@ export const context = ({ req }: { req: Request }): Context => {
     // TODO: if jwt expired, return null for auth
 
     return {
-      prisma: new PrismaClient(),
+      prisma,
       authUser: decoded as Context['authUser'],
+      userLoader,
     };
   } catch (err) {
     return {
-      prisma: new PrismaClient(),
+      prisma,
       authUser: null,
+      userLoader,
     };
   }
 };

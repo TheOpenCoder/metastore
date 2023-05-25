@@ -1,8 +1,9 @@
-import { shield, rule, allow, deny } from 'graphql-shield';
+import { shield, rule } from 'graphql-shield';
 import { GraphQLError } from 'graphql';
 
 export const isAuthenticated = rule()(async (parent, args, ctx, info) => {
   if (ctx.authUser === null) return new GraphQLError('Not Authenticated');
+
   return true;
 });
 

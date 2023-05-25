@@ -3,7 +3,7 @@ type User {
   publicAddress: String!
   nonce: Int!
   username: String!
-  firstName: String!
+  firstName: String
   lastName: String
   bio: String
   profilePicture: String
