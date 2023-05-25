@@ -1,0 +1,7 @@
+type Query {
+  user(id: ID!): User # shouldBeFriends | shouldBeMe
+  users: [User]! # shouldBeFriends
+  me: User! # xshouldBeAuthenticated
+  # searching & filtering queries on users (username, publicAddress)
+  db: Boolean
+}

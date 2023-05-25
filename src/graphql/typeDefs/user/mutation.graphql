@@ -1,0 +1,8 @@
+type Mutation {
+  registerUser(input: RegisterUserInput!): User! # xshouldPerformAuth & xshouldReturnJWT
+  loginUser(input: LoginUserInput!): User! # xshouldPerformAuth & shouldReturnJWT
+  updateUser(input: UpdateUserInput!): User! # shouldBeAuthenticated
+  deleteUser(signature: String!): Boolean! # shouldBeAuthenticated & shouldPerformAuth
+  sendFriendRequest(to: ID!): Boolean! # shouldBeAuthenticated
+  acceptFriendRequest(from: ID!): Boolean! # shouldBeAuthenticated
+}

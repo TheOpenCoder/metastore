@@ -1,6 +1,6 @@
-import { PrismaClient, OnlineStatus } from '@prisma/client';
+import { OnlineStatus } from '@prisma/client';
 
-export type PrismaUser = {
+export default interface PrismaUser {
   id: string;
   publicAddress: string;
   nonce: number;
@@ -23,4 +23,4 @@ export type PrismaUser = {
     followingId: string;
     createdAt: Date;
   };
-};
+}

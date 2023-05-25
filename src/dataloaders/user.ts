@@ -1,6 +1,7 @@
-import { PrismaClient, User as PrismaUser } from '@prisma/client';
-import { User } from '../../types';
+import { PrismaClient, User } from '@prisma/client';
+import PrismaUser from '../types/prisma.user';
 
+// TODO: fix the types
 export default async (
   ids: readonly string[],
   prisma: PrismaClient,
@@ -24,6 +25,7 @@ export default async (
   return ids.map((id) => users.find((user) => user.id === id));
 };
 
+// actual code to build dataloader
 // const getUsers = async (ids: readonly string[]) => {
 //   console.log('getUser', ids);
 //   const users = await

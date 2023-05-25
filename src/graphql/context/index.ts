@@ -1,25 +1,24 @@
 import { PrismaClient } from '@prisma/client';
-import * as jwt from 'jsonwebtoken';
 import * as DataLoader from 'dataloader';
-import batchUsers from '../../dataloaders/user';
-import { User } from '../../../types';
 
-export interface Context {
-  prisma: PrismaClient;
-  authUser: {
-    id: string;
-    publicAddress: string;
-    username: string;
-  } | null;
-  userLoader: DataLoader<string, User, string>;
-}
+import batchUsers from '../../dataloaders/user';
+import { verifyJWT } from '../../auth/jwt';
+
+import { User } from '../../types/codegen.types';
+import Context from '../../types/context';
 
 const prisma = new PrismaClient();
 const userLoader = new DataLoader<string, User>((ids: readonly string[]) =>
   batchUsers(ids, prisma),
 );
 
-export const context = ({ req }: { req: Request }): Context => {
+export const context = ({
+  req,
+  res,
+}: {
+  req: Request;
+  res: Response;
+}): Context => {
   // TODO: use cookie instead of header
   // @ts-expect-error
   const token: string | undefined | null = req.headers['x-auth-token'];
@@ -29,24 +28,30 @@ export const context = ({ req }: { req: Request }): Context => {
       prisma,
       authUser: null,
       userLoader,
+      req,
+      res,
     };
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as jwt.Secret);
+    const decodedJWT = verifyJWT(token);
 
-    // TODO: if jwt expired, return null for auth
+    // TODO: handle JWT expiration
 
     return {
       prisma,
-      authUser: decoded as Context['authUser'],
+      authUser: decodedJWT as Context['authUser'],
       userLoader,
+      req,
+      res,
     };
   } catch (err) {
     return {
       prisma,
       authUser: null,
       userLoader,
+      req,
+      res,
     };
   }
 };

@@ -1,0 +1,52 @@
+type User {
+  id: ID!
+  publicAddress: String!
+  nonce: Int!
+  username: String!
+  firstName: String
+  lastName: String
+  bio: String
+  profilePicture: String
+  settings: UserSettings!
+  socials: UserSocials!
+  # games: UserGames!
+  # addons: UserAddons!
+  # organisations: UserOrganisations!
+  # reviews: [Review]!
+  # achievements: [Achievement]!
+  # metrics: UserMetrics!
+  createdAt: Date!
+  updatedAt: Date
+}
+
+type UserSocials {
+  friends: [User]!
+  friendRequests: [User]!
+}
+
+type UserGames {
+  library: [Game]!
+  favorite: [Game]!
+}
+
+type UserAddons {
+  library: [Addon]!
+  favorite: [Addon]!
+}
+
+type UserOrganisations {
+  created: [Organisation]!
+  joined: [Organisation]!
+}
+
+type UserMetrics {
+  totalAchievements: Int
+  totalHoursPlayed: Int
+  totalFriends: Int
+}
+
+type UserSettings {
+  onlineStatus: OnlineStatus!
+  isPrivate: Boolean
+  canReceiveFriendRequests: Boolean
+}

@@ -1,5 +1,6 @@
+// dotenv.config({ path: `.env.${process.env.NODE_ENV}.local` });
 import * as dotenv from 'dotenv';
-dotenv.config({ path: `.env.${process.env.NODE_ENV}.local` });
+dotenv.config();
 import * as express from 'express';
 import { createYoga, createSchema } from 'graphql-yoga';
 import { applyMiddleware } from 'graphql-middleware';
@@ -8,7 +9,8 @@ import typeDefs from './graphql/typeDefs';
 import resolvers from './graphql/resolvers';
 import { context } from './graphql/context';
 import { permissions } from './graphql/permissions';
-import { PORT } from './utils';
+
+import { PORT } from './utils/constants';
 
 const schema = createSchema({
   typeDefs,

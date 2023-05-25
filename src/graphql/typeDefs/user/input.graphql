@@ -1,0 +1,28 @@
+input RegisterUserInput {
+  publicAddress: String!
+  nonce: Int!
+  signature: String!
+  username: String!
+  firstName: String
+  profilePicture: String
+}
+
+input LoginUserInput {
+  publicAddress: String!
+  signature: String!
+}
+
+input UpdateUserInput {
+  username: String
+  firstName: String
+  lastName: String
+  bio: String
+  profilePicture: String
+  settings: UpdateUserSettingsInput
+}
+
+input UpdateUserSettingsInput {
+  onlineStatus: OnlineStatus
+  isPrivate: Boolean
+  canReceiveFriendRequests: Boolean
+}

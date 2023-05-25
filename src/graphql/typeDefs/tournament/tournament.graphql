@@ -1,0 +1,4 @@
+type Tournament {
+  id: ID!
+  name: String!
+}

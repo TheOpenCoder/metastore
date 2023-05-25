@@ -1,7 +1,6 @@
 import * as _ from 'lodash';
 import { GraphQLError } from 'graphql';
 import { PrismaClient, User as PrismaUser } from '@prisma/client';
-import DataLoader from 'dataloader';
 
 import {
   Resolvers,
@@ -11,22 +10,13 @@ import {
   User,
   LoginUserInput,
   OnlineStatus,
-} from '../../../types';
-import { verifiedSignature, generateJWT } from '../../auth';
-import { generateNonce } from './../../utils';
+} from '../../../types/codegen.types';
+import { verifiedSignature } from '../../../auth';
+import { generateJWT } from '../../../auth/jwt';
+import { generateNonce } from '../../../utils/auth';
+import Context from '../../../types/context';
 
 // types
-interface Context {
-  prisma: PrismaClient;
-  authUser: {
-    id: string;
-    publicAddress: string;
-    username: string;
-  } | null;
-  req: Request;
-  res: Response;
-  userLoader: DataLoader<string, any, string>;
-}
 
 const resolvers: Resolvers = {
   Query: {
@@ -368,15 +358,6 @@ const resolvers: Resolvers = {
     settings: async (parent: User, args: {}, { userLoader }: Context) => {
       const { userSettings } = await userLoader.load(parent.id);
       return _.omit(userSettings, ['updatedAt', 'userId']) as UserSettings;
-    },
-
-    friends: async (parent: User, args: {}, { userLoader }: Context) => {
-      const { requestedBy } = await userLoader.load(parent.id);
-      const friends = _.map(requestedBy, (request) => ({
-        id: request.requesterId,
-      }));
-
-      return friends as User[];
     },
   },
 };
