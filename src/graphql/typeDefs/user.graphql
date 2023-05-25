@@ -8,7 +8,8 @@ type User {
   bio: String
   profilePicture: String
   settings: UserSettings!
-  socials: UserSocials!
+  friends: [User]!
+  # socials: UserSocials!
   # games: UserGames!
   # addons: UserAddons!
   # organisations: UserOrganisations!
@@ -85,6 +86,7 @@ type Query {
   users: [User]! # shouldBeFriends
   me: User! # xshouldBeAuthenticated
   # searching & filtering queries on users (username, publicAddress)
+  db: Boolean
 }
 
 type Mutation {

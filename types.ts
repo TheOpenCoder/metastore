@@ -131,6 +131,7 @@ export type Organisation = {
 
 export type Query = {
   __typename?: 'Query';
+  db?: Maybe<Scalars['Boolean']>;
   me: User;
   user?: Maybe<User>;
   users: Array<Maybe<User>>;
@@ -176,13 +177,13 @@ export type User = {
   bio?: Maybe<Scalars['String']>;
   createdAt: Scalars['Date'];
   firstName: Scalars['String'];
+  friends: Array<Maybe<User>>;
   id: Scalars['ID'];
   lastName?: Maybe<Scalars['String']>;
   nonce: Scalars['Int'];
   profilePicture?: Maybe<Scalars['String']>;
   publicAddress: Scalars['String'];
   settings: UserSettings;
-  socials: UserSocials;
   updatedAt?: Maybe<Scalars['Date']>;
   username: Scalars['String'];
 };
@@ -390,6 +391,7 @@ export type OrganisationResolvers<ContextType = any, ParentType extends Resolver
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
+  db?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   me?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserArgs, 'id'>>;
   users?: Resolver<Array<Maybe<ResolversTypes['User']>>, ParentType, ContextType>;
@@ -405,13 +407,13 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   bio?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   firstName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  friends?: Resolver<Array<Maybe<ResolversTypes['User']>>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   lastName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   nonce?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   profilePicture?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   publicAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   settings?: Resolver<ResolversTypes['UserSettings'], ParentType, ContextType>;
-  socials?: Resolver<ResolversTypes['UserSocials'], ParentType, ContextType>;
   updatedAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   username?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
