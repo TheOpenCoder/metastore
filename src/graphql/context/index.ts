@@ -12,7 +12,7 @@ export interface Context {
 
 export const context = ({ req }: { req: Request }): Context => {
   // TODO: use cookie instead of header
-  // @ts-ignore
+  // @ts-expect-error
   const token: string | undefined | null = req.headers['x-auth-token'];
 
   if (!token) {

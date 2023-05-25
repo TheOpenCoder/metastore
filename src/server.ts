@@ -23,7 +23,7 @@ const yoga = createYoga({
   context,
 });
 
-// @ts-ignore
+// @ts-expect-error
 app.use(yoga.graphqlEndpoint, yoga);
 
 app.listen(PORT, () => {
