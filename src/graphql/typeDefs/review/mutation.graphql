@@ -1,0 +1,5 @@
+type Mutation {
+  postReview(input: PostReviewInput): Review!
+  updateReview(input: UpdateReviewInput): Review!
+  deleteReview(id: ID!): Review!
+}

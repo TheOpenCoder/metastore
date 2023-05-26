@@ -1,6 +1,10 @@
 type Achievement {
-  id: ID
-  name: String
+  id: ID!
+  title: String!
+  description: String!
+  image: String!
+  rarity: Rarity!
+  game: Game!
 }
 
 type Addon {
@@ -14,11 +18,9 @@ type Game {
 }
 
 type Organisation {
-  id: ID
+  id: ID!
   name: String
 }
-
-scalar Date
 
 enum OnlineStatus {
   ONLINE
@@ -65,9 +67,60 @@ enum Features {
   LOCAL_MULTI_PLAYER
 }
 
+enum Rarity {
+  COMMON
+  UNCOMMON
+  RARE
+  EPIC
+  LEGENDARY
+  MYTHIC
+  UNIQUE
+}
+
+scalar Date
+
+input PostReviewInput {
+  game: ID!
+  rating: Int!
+  content: String
+}
+
+input UpdateReviewInput {
+  id: ID!
+  rating: Int
+  content: String
+}
+
+type Mutation {
+  postReview(input: PostReviewInput): Review!
+  updateReview(input: UpdateReviewInput): Review!
+  deleteReview(id: ID!): Review!
+  registerUser(input: RegisterUserInput!): User!
+  loginUser(input: LoginUserInput!): User!
+  updateUser(input: UpdateUserInput!): User!
+  deleteUser(signature: String!): Boolean!
+  sendFriendRequest(to: ID!): Boolean!
+  acceptFriendRequest(from: ID!): Boolean!
+  declineFriendRequest(from: ID!): Boolean!
+  removeFriend(friend: ID!): Boolean!
+}
+
+type Query {
+  review(id: ID!): Review
+  reviews: [Review]!
+  user(id: ID!): User
+  users: [User]!
+  me: User!
+  db: Boolean
+}
+
 type Review {
-  id: ID
-  name: String
+  id: ID!
+  user: User!
+  game: Game!
+  rating: Int!
+  content: String
+  createdAt: Date!
 }
 
 type Tournament {
@@ -104,24 +157,6 @@ input UpdateUserSettingsInput {
   canReceiveFriendRequests: Boolean
 }
 
-type Mutation {
-  registerUser(input: RegisterUserInput!): User!
-  loginUser(input: LoginUserInput!): User!
-  updateUser(input: UpdateUserInput!): User!
-  deleteUser(signature: String!): Boolean!
-  sendFriendRequest(to: ID!): Boolean!
-  acceptFriendRequest(from: ID!): Boolean!
-  declineFriendRequest(from: ID!): Boolean!
-  removeFriend(friend: ID!): Boolean!
-}
-
-type Query {
-  user(id: ID!): User
-  users: [User]!
-  me: User!
-  db: Boolean
-}
-
 type User {
   id: ID!
   publicAddress: String!
@@ -136,15 +171,15 @@ type User {
   games: UserGames!
   addons: UserAddons!
   organisations: UserOrganisations!
-  reviews: [Review]!
   achievements: [Achievement]!
+  reviews: [Review]!
   metrics: UserMetrics!
   createdAt: Date!
   updatedAt: Date
 }
 
 type UserSettings {
-  onlineStatus: OnlineStatus!
+  onlineStatus: OnlineStatus
   isPrivate: Boolean
   canReceiveFriendRequests: Boolean
 }

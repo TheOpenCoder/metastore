@@ -12,15 +12,15 @@ type User {
   games: UserGames!
   addons: UserAddons!
   organisations: UserOrganisations!
-  reviews: [Review]!
   achievements: [Achievement]!
+  reviews: [Review]!
   metrics: UserMetrics!
   createdAt: Date!
   updatedAt: Date
 }
 
 type UserSettings {
-  onlineStatus: OnlineStatus!
+  onlineStatus: OnlineStatus
   isPrivate: Boolean
   canReceiveFriendRequests: Boolean
 }

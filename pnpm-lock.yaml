@@ -7,6 +7,9 @@ dependencies:
   '@graphql-tools/merge':
     specifier: ^9.0.0
     version: 9.0.0(graphql@16.6.0)
+  '@graphql-yoga/plugin-csrf-prevention':
+    specifier: ^1.5.1
+    version: 1.5.1(graphql-yoga@3.9.1)
   '@prisma/client':
     specifier: 4.14.0
     version: 4.14.0(prisma@4.14.0)
@@ -1390,6 +1393,14 @@ packages:
     resolution: {integrity: sha512-6npFz7eZz33mXgSm1waBLMjUNG0D5hTc/p5Hcs1mojkT3KsLpCOFokzTEKboNsBhKevYcaVa/xeA7WBj4UYMLg==}
     dependencies:
       tslib: 2.5.0
+    dev: false
+
+  /@graphql-yoga/plugin-csrf-prevention@1.5.1(graphql-yoga@3.9.1):
+    resolution: {integrity: sha512-doWJBitBr81woC7tf+XoUZGKWqch7f+r+nLggU1yb3YHGoic3S31xYpkcMP01Vx1gm1VQyW65SNOYSVZ4rMSyQ==}
+    peerDependencies:
+      graphql-yoga: ^3.9.1
+    dependencies:
+      graphql-yoga: 3.9.1(graphql@16.6.0)
     dev: false
 
   /@graphql-yoga/subscription@3.1.0:

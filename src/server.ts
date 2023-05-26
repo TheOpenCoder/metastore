@@ -2,28 +2,11 @@
 import * as dotenv from 'dotenv';
 dotenv.config();
 import * as express from 'express';
-import { createYoga, createSchema } from 'graphql-yoga';
-import { applyMiddleware } from 'graphql-middleware';
-
-import typeDefs from './graphql/typeDefs';
-import resolvers from './graphql/resolvers';
-import { context } from './graphql/context';
-import { permissions } from './graphql/permissions';
+import { yoga } from './yoga';
 
 import { PORT } from './utils/constants';
 
-const schema = createSchema({
-  typeDefs,
-  resolvers,
-});
-
-const schemaWithPermissions = applyMiddleware(schema, permissions);
-
 const app = express();
-const yoga = createYoga({
-  schema: schemaWithPermissions,
-  context,
-});
 
 // @ts-expect-error
 app.use(yoga.graphqlEndpoint, yoga);

@@ -1,4 +1,4 @@
 type Organisation {
-  id: ID
+  id: ID!
   name: String
 }

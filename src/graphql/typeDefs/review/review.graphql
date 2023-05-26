@@ -1,4 +1,8 @@
 type Review {
-  id: ID
-  name: String
+  id: ID!
+  user: User!
+  game: Game!
+  rating: Int!
+  content: String
+  createdAt: Date!
 }

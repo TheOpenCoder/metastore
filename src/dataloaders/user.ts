@@ -16,11 +16,20 @@ export default async (
     },
     include: {
       userSettings: true,
-      requestedBy: true,
+      requestedBy: {
+        select: {
+          requesterId: true,
+        },
+      },
+      following: {
+        select: {
+          followingId: true,
+        },
+      },
     },
   });
 
-  console.log('users', users);
+  // console.log('users', users);
 
   return ids.map((id) => users.find((user) => user.id === id));
 };
