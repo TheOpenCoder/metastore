@@ -105,8 +105,15 @@ const resolvers: Resolvers = {
       { input }: { input: UpdateUserInput },
       { prisma, authUser }: ResolverContext,
     ) => {
-      const { username, firstName, lastName, bio, profilePicture, settings } =
-        input;
+      const {
+        username,
+        firstName,
+        lastName,
+        bio,
+        profilePicture,
+        onlineStatus,
+        settings,
+      } = input;
 
       if (!authUser) throw new GraphQLError('Not Authenticated');
       const { id } = authUser;
@@ -119,7 +126,7 @@ const resolvers: Resolvers = {
           lastName: lastName || undefined,
           bio: bio || undefined,
           profilePicture: profilePicture || undefined,
-          onlineStatus: settings?.onlineStatus || undefined,
+          onlineStatus: onlineStatus || undefined,
           userSettings: {
             update: {
               isPrivate: settings?.isPrivate || undefined,

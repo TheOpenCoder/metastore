@@ -166,11 +166,11 @@ input UpdateUserInput {
   lastName: String
   bio: String
   profilePicture: String
+  onlineStatus: OnlineStatus
   settings: UpdateUserSettingsInput
 }
 
 input UpdateUserSettingsInput {
-  onlineStatus: OnlineStatus
   isPrivate: Boolean
   canReceiveFriendRequests: Boolean
 }

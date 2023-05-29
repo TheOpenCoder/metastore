@@ -252,6 +252,7 @@ export type UpdateUserInput = {
   bio?: InputMaybe<Scalars['String']>;
   firstName?: InputMaybe<Scalars['String']>;
   lastName?: InputMaybe<Scalars['String']>;
+  onlineStatus?: InputMaybe<OnlineStatus>;
   profilePicture?: InputMaybe<Scalars['String']>;
   settings?: InputMaybe<UpdateUserSettingsInput>;
   username?: InputMaybe<Scalars['String']>;
@@ -260,7 +261,6 @@ export type UpdateUserInput = {
 export type UpdateUserSettingsInput = {
   canReceiveFriendRequests?: InputMaybe<Scalars['Boolean']>;
   isPrivate?: InputMaybe<Scalars['Boolean']>;
-  onlineStatus?: InputMaybe<OnlineStatus>;
 };
 
 export type User = {
