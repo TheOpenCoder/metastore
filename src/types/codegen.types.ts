@@ -95,7 +95,6 @@ export type Mutation = {
   loginUser: User;
   postReview: Review;
   registerUser: User;
-  removeFriend: Scalars['Boolean'];
   sendFriendRequest: Scalars['Boolean'];
   updateReview: Review;
   updateUser: User;
@@ -134,11 +133,6 @@ export type MutationPostReviewArgs = {
 
 export type MutationRegisterUserArgs = {
   input: RegisterUserInput;
-};
-
-
-export type MutationRemoveFriendArgs = {
-  friend: Scalars['ID'];
 };
 
 
@@ -514,7 +508,6 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   loginUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationLoginUserArgs, 'input'>>;
   postReview?: Resolver<ResolversTypes['Review'], ParentType, ContextType, Partial<MutationPostReviewArgs>>;
   registerUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationRegisterUserArgs, 'input'>>;
-  removeFriend?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationRemoveFriendArgs, 'friend'>>;
   sendFriendRequest?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationSendFriendRequestArgs, 'to'>>;
   updateReview?: Resolver<ResolversTypes['Review'], ParentType, ContextType, Partial<MutationUpdateReviewArgs>>;
   updateUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationUpdateUserArgs, 'input'>>;

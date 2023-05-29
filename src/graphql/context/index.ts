@@ -11,9 +11,6 @@ import { User } from '../../types/codegen.types';
 const prisma = new PrismaClient({
   log: ['query'],
 });
-const userLoader = new DataLoader<string, User>((ids: readonly string[]) =>
-  batchUsers(ids, prisma),
-);
 
 export const context = async ({
   request,
@@ -29,7 +26,9 @@ export const context = async ({
     return {
       prisma,
       authUser: null,
-      userLoader,
+      userLoader: new DataLoader<string, User>((ids: readonly string[]) =>
+        batchUsers(ids, prisma),
+      ),
     };
   }
 
@@ -39,13 +38,17 @@ export const context = async ({
     return {
       prisma,
       authUser: decodedJWT as Context['authUser'],
-      userLoader,
+      userLoader: new DataLoader<string, User>((ids: readonly string[]) =>
+        batchUsers(ids, prisma),
+      ),
     };
   } catch (err) {
     return {
       prisma,
       authUser: null,
-      userLoader,
+      userLoader: new DataLoader<string, User>((ids: readonly string[]) =>
+        batchUsers(ids, prisma),
+      ),
     };
   }
 };

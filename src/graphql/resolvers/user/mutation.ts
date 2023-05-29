@@ -44,6 +44,7 @@ const resolvers: Resolvers = {
           username,
           firstName,
           profilePicture,
+          userSettings: {},
         },
       });
 

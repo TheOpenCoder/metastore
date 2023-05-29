@@ -121,7 +121,6 @@ type Mutation {
   cancelFriendRequest(to: ID!): Boolean!
   acceptFriendRequest(from: ID!): Boolean!
   declineFriendRequest(from: ID!): Boolean!
-  removeFriend(friend: ID!): Boolean!
 }
 
 type Query {
