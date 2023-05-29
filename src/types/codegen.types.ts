@@ -92,7 +92,6 @@ export type Mutation = {
   cancelFriendRequest: Scalars['Boolean'];
   declineFriendRequest: Scalars['Boolean'];
   deleteReview: Review;
-  deleteUser: Scalars['Boolean'];
   loginUser: User;
   postReview: Review;
   registerUser: User;
@@ -120,11 +119,6 @@ export type MutationDeclineFriendRequestArgs = {
 
 export type MutationDeleteReviewArgs = {
   id: Scalars['ID'];
-};
-
-
-export type MutationDeleteUserArgs = {
-  signature: Scalars['String'];
 };
 
 
@@ -246,7 +240,6 @@ export type StringQueryOperatorInput = {
   in?: InputMaybe<Array<Scalars['String']>>;
   ne?: InputMaybe<Scalars['String']>;
   nin?: InputMaybe<Array<Scalars['String']>>;
-  regex?: InputMaybe<Scalars['String']>;
 };
 
 export type Tournament = {
@@ -518,7 +511,6 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   cancelFriendRequest?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationCancelFriendRequestArgs, 'to'>>;
   declineFriendRequest?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeclineFriendRequestArgs, 'from'>>;
   deleteReview?: Resolver<ResolversTypes['Review'], ParentType, ContextType, RequireFields<MutationDeleteReviewArgs, 'id'>>;
-  deleteUser?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteUserArgs, 'signature'>>;
   loginUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationLoginUserArgs, 'input'>>;
   postReview?: Resolver<ResolversTypes['Review'], ParentType, ContextType, Partial<MutationPostReviewArgs>>;
   registerUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationRegisterUserArgs, 'input'>>;

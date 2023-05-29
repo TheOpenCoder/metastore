@@ -1,5 +1,5 @@
 import { PrismaClient, User } from '@prisma/client';
-import PrismaUser from '../types/prisma.user';
+import PrismaUser from '../types/prisma/user';
 
 // TODO: fix the types
 export default async (
@@ -16,20 +16,18 @@ export default async (
     },
     include: {
       userSettings: true,
-      requestedBy: {
+      receivedRequests: {
         select: {
           requesterId: true,
         },
       },
-      following: {
+      receivedFollows: {
         select: {
-          followingId: true,
+          followeeId: true,
         },
       },
     },
   });
-
-  // console.log('users', users);
 
   return ids.map((id) => users.find((user) => user.id === id));
 };

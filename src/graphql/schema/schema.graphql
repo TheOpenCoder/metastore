@@ -94,7 +94,6 @@ input StringQueryOperatorInput {
   ne: String
   in: [String!]
   nin: [String!]
-  regex: String
 }
 
 scalar Date
@@ -118,12 +117,11 @@ type Mutation {
   registerUser(input: RegisterUserInput!): User!
   loginUser(input: LoginUserInput!): User!
   updateUser(input: UpdateUserInput!): User!
-  deleteUser(signature: String!): Boolean!
   sendFriendRequest(to: ID!): Boolean!
+  cancelFriendRequest(to: ID!): Boolean!
   acceptFriendRequest(from: ID!): Boolean!
   declineFriendRequest(from: ID!): Boolean!
   removeFriend(friend: ID!): Boolean!
-  cancelFriendRequest(to: ID!): Boolean!
 }
 
 type Query {

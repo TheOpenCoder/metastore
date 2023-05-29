@@ -16,10 +16,11 @@ CREATE TABLE "User" (
     "publicAddress" STRING NOT NULL,
     "nonce" INT4 NOT NULL,
     "username" STRING NOT NULL,
-    "firstName" STRING NOT NULL,
+    "firstName" STRING,
     "lastName" STRING,
     "bio" STRING,
     "profilePicture" STRING,
+    "onlineStatus" "OnlineStatus" NOT NULL DEFAULT 'ONLINE',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -29,7 +30,6 @@ CREATE TABLE "User" (
 -- CreateTable
 CREATE TABLE "UserSettings" (
     "userId" STRING NOT NULL,
-    "onlineStatus" "OnlineStatus" NOT NULL DEFAULT 'ONLINE',
     "isPrivate" BOOL NOT NULL DEFAULT false,
     "canReceiveFriendRequests" BOOL NOT NULL DEFAULT true,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -40,19 +40,19 @@ CREATE TABLE "UserSettings" (
 -- CreateTable
 CREATE TABLE "Follows" (
     "followerId" STRING NOT NULL,
-    "followingId" STRING NOT NULL,
+    "followeeId" STRING NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT "Follows_pkey" PRIMARY KEY ("followerId","followingId")
+    CONSTRAINT "Follows_pkey" PRIMARY KEY ("followerId","followeeId")
 );
 
 -- CreateTable
 CREATE TABLE "Requests" (
     "requesterId" STRING NOT NULL,
-    "requestingId" STRING NOT NULL,
+    "requesteeId" STRING NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT "Requests_pkey" PRIMARY KEY ("requesterId","requestingId")
+    CONSTRAINT "Requests_pkey" PRIMARY KEY ("requesterId","requesteeId")
 );
 
 -- CreateTable
@@ -201,13 +201,13 @@ ALTER TABLE "UserSettings" ADD CONSTRAINT "UserSettings_userId_fkey" FOREIGN KEY
 ALTER TABLE "Follows" ADD CONSTRAINT "Follows_followerId_fkey" FOREIGN KEY ("followerId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Follows" ADD CONSTRAINT "Follows_followingId_fkey" FOREIGN KEY ("followingId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Follows" ADD CONSTRAINT "Follows_followeeId_fkey" FOREIGN KEY ("followeeId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Requests" ADD CONSTRAINT "Requests_requesterId_fkey" FOREIGN KEY ("requesterId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Requests" ADD CONSTRAINT "Requests_requestingId_fkey" FOREIGN KEY ("requestingId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Requests" ADD CONSTRAINT "Requests_requesteeId_fkey" FOREIGN KEY ("requesteeId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Game" ADD CONSTRAINT "Game_organisationId_fkey" FOREIGN KEY ("organisationId") REFERENCES "Organisation"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

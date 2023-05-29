@@ -4,6 +4,7 @@ import { GraphQLError } from 'graphql';
 import { verifiedSignature } from '../../../auth';
 import { generateJWT } from '../../../auth/jwt';
 import { generateNonce } from '../../../utils/auth';
+import { setAuthCookie } from '../../../auth/cookies';
 
 import {
   Resolvers,
@@ -12,14 +13,15 @@ import {
   LoginUserInput,
   UpdateUserInput,
 } from '../../../types/codegen.types';
-import Context from '../../../types/context';
+import { ResolverContext } from '../../../types/context';
 
 const resolvers: Resolvers = {
   Mutation: {
+    // HANDLEERROR: username taken, publicAddress taken
     registerUser: async (
       root: {},
       { input }: { input: RegisterUserInput },
-      { prisma, res }: Context,
+      { prisma, request }: ResolverContext,
     ) => {
       const {
         publicAddress,
@@ -30,95 +32,77 @@ const resolvers: Resolvers = {
         profilePicture,
       } = input;
 
-      // verify signature else throw error
       if (!verifiedSignature(publicAddress, nonce, signature))
         throw new GraphQLError('Invalid signature');
 
       const randomNonce = generateNonce();
 
-      try {
-        const user = await prisma.user.create({
-          data: {
-            publicAddress,
-            nonce: randomNonce,
-            username,
-            firstName,
-            profilePicture,
-            // must create user settings here
-            userSettings: {
-              create: {},
-            },
-          },
-        });
+      const user = await prisma.user.create({
+        data: {
+          publicAddress,
+          nonce: randomNonce,
+          username,
+          firstName,
+          profilePicture,
+        },
+      });
 
-        // TODO: use cookie instead
-        // @ts-expect-error
-        res.header('x-auth-token', generateJWT(user));
+      const { id } = user;
 
-        return user as User;
-      } catch (err) {
-        // TODO: publicAddress taken (which implies user already exists) & username taken
+      await setAuthCookie(
+        request,
+        generateJWT({ id, publicAddress, username }),
+      );
 
-        throw new GraphQLError('Error creating user');
-      }
+      return user as User;
     },
 
     loginUser: async (
       root: {},
       { input }: { input: LoginUserInput },
-      { prisma, res }: Context,
+      { prisma, request }: ResolverContext,
     ) => {
       const { publicAddress, signature } = input;
 
-      // TODO: use try catch
-      const tempUser = (await prisma.user.findUnique({
+      const existingUser = await prisma.user.findUnique({
         where: {
           publicAddress,
         },
+      });
 
-        select: {
-          nonce: true,
-          id: true,
-        },
-      })) as User;
+      if (!existingUser) throw new GraphQLError("User doesn't exist");
 
-      if (!tempUser) throw new GraphQLError("User doesn't exist");
+      const { nonce, id } = existingUser;
 
-      const { nonce, id } = tempUser;
-
-      // verify signature else throw error
       if (!verifiedSignature(publicAddress, nonce, signature))
         throw new GraphQLError('Invalid signature');
 
       const randomNonce = generateNonce();
 
-      try {
-        // both replace nonce and return user
-        const user = await prisma.user.update({
-          where: {
-            id,
-          },
-          data: {
-            nonce: randomNonce,
-          },
-        });
+      const user = await prisma.user.update({
+        where: {
+          id,
+        },
+        data: {
+          nonce: randomNonce,
+        },
+      });
 
-        if (!user) throw new GraphQLError("User doesn't exist");
+      const { username } = user;
 
-        // TODO: use cookie instead
-        // @ts-expect-error
-        res.header('x-auth-token', generateJWT(user));
+      await setAuthCookie(
+        request,
+        generateJWT({ id, publicAddress, username }),
+      );
 
-        return user as User;
-      } catch (err) {
-        throw new GraphQLError('Error logging in user');
-      }
+      return user as User;
     },
 
+    // HANDLEERROR: username taken
     updateUser: async (
       root: {},
       { input }: { input: UpdateUserInput },
-      { prisma, authUser }: Context,
+      { prisma, authUser }: ResolverContext,
     ) => {
       const { username, firstName, lastName, bio, profilePicture, settings } =
         input;
@@ -126,111 +110,142 @@ const resolvers: Resolvers = {
       if (!authUser) throw new GraphQLError('Not Authenticated');
       const { id } = authUser;
 
-      try {
-        const user = await prisma.user.update({
-          where: { id },
-          data: {
-            username: username || undefined,
-            firstName: firstName || undefined,
-            lastName: lastName || undefined,
-            bio: bio || undefined,
-            profilePicture: profilePicture || undefined,
-            userSettings: {
-              update: {
-                onlineStatus: settings?.onlineStatus || undefined,
-                isPrivate: settings?.isPrivate || undefined,
-                canReceiveFriendRequests:
-                  settings?.canReceiveFriendRequests || undefined,
-              },
+      const user = await prisma.user.update({
+        where: { id },
+        data: {
+          username: username || undefined,
+          firstName: firstName || undefined,
+          lastName: lastName || undefined,
+          bio: bio || undefined,
+          profilePicture: profilePicture || undefined,
+          onlineStatus: settings?.onlineStatus || undefined,
+          userSettings: {
+            update: {
+              isPrivate: settings?.isPrivate || undefined,
+              canReceiveFriendRequests:
+                settings?.canReceiveFriendRequests || undefined,
             },
           },
-        });
+        },
+      });
 
-        return user as User;
-      } catch (err) {
-        // TODO: handle username taken error
-        throw new GraphQLError('Error updating user');
-      }
+      return user as User;
     },
 
-    deleteUser: async (
+    // HANDLEERROR: friend request already sent
+    sendFriendRequest: async (
       root: {},
-      { signature }: { signature: string },
-      { prisma, authUser }: Context,
+      { to: requesteeId }: { to: string },
+      { prisma, authUser }: ResolverContext,
     ) => {
       if (!authUser) throw new GraphQLError('Not Authenticated');
       const { id } = authUser;
 
-      // TODO: use try catch
-      const tempUser = await prisma.user.findUnique({
+      await prisma.user.update({
         where: {
           id,
         },
-        select: {
-          nonce: true,
-          publicAddress: true,
+        data: {
+          sentRequests: {
+            create: {
+              requesteeId,
+            },
+          },
         },
       });
 
-      if (!tempUser) throw new GraphQLError("User doesn't exist");
-
-      const { nonce, publicAddress } = tempUser;
-
-      if (!verifiedSignature(publicAddress, nonce, signature))
-        throw new GraphQLError('Invalid signature');
-
-      try {
-        const deleteUserSettings = prisma.userSettings.delete({
-          where: { userId: id },
-        });
-
-        const deleteUser = prisma.user.delete({
-          where: { id },
-        });
-
-        const transaction = await prisma.$transaction([
-          deleteUserSettings,
-          deleteUser,
-        ]);
-
-        return true;
-      } catch (err) {
-        throw new GraphQLError('Error deleting user');
-      }
+      return true;
     },
 
-    // sendFriendRequest: async (
-    //   root: {},
-    //   { to: requestingId }: { to: string },
-    //   { prisma, authUser }: Context,
-    // ) => {
-    //   if (!authUser) throw new GraphQLError('Not Authenticated');
-    //   const { id: requesterId } = authUser;
+    // HANDLEERROR: friend request doesn't exists
+    cancelFriendRequest: async (
+      root: {},
+      { to: requesteeId }: { to: string },
+      { prisma, authUser }: ResolverContext,
+    ) => {
+      if (!authUser) throw new GraphQLError('Not Authenticated');
+      const { id } = authUser;
 
-    //   try {
-    //     // await prisma.requests.create({
-    //     //   data: {
-    //     //     requesterId,
-    //     //     requestingId,
-    //     //   },
-    //     // });
+      await prisma.user.update({
+        where: {
+          id,
+        },
+        data: {
+          sentRequests: {
+            delete: {
+              requesterId_requesteeId: {
+                requesterId: id,
+                requesteeId,
+              },
+            },
+          },
+        },
+      });
 
-    //     const tempUser = await prisma.user.findUnique({
-    //       where: {
-    //         id: requesterId,
-    //       },
-    //       include: {
-    //         requestedBy: {},
-    //       },
-    //     });
+      return true;
+    },
 
-    //     console.log(tempUser);
+    // HANDLEERROR: friend request doesn't exists
+    acceptFriendRequest: async (
+      root: {},
+      { from: requesterId }: { from: string },
+      { prisma, authUser }: ResolverContext,
+    ) => {
+      if (!authUser) throw new GraphQLError('Not Authenticated');
+      const { id } = authUser;
 
-    //     return true;
-    //   } catch (err) {
-    //     throw new GraphQLError('Error sending friend request');
-    //   }
-    // },
+      await prisma.user.update({
+        where: {
+          id,
+        },
+        data: {
+          receivedRequests: {
+            delete: {
+              requesterId_requesteeId: {
+                requesterId,
+                requesteeId: id,
+              },
+            },
+          },
+
+          receivedFollows: {
+            create: {
+              followerId: requesterId,
+            },
+          },
+        },
+      });
+
+      return true;
+    },
+
+    // HANDLEERROR: friend request doesn't exists
+    declineFriendRequest: async (
+      root: {},
+      { from: requesterId }: { from: string },
+      { prisma, authUser }: ResolverContext,
+    ) => {
+      if (!authUser) throw new GraphQLError('Not Authenticated');
+      const { id } = authUser;
+
+      await prisma.user.update({
+        where: {
+          id,
+        },
+        data: {
+          receivedRequests: {
+            delete: {
+              requesterId_requesteeId: {
+                requesterId,
+                requesteeId: id,
+              },
+            },
+          },
+        },
+      });
+
+      return true;
+    },
   },
 };
 

@@ -1,69 +1,60 @@
-import * as _ from 'lodash';
 import { GraphQLError } from 'graphql';
 
-import { generatePrismaUserFilter } from '../../../utils/prismaFilter';
+import { generatePrismaUserFilter } from '../../../utils/prismaFilters/userFilter';
 
+import { ResolverContext } from '../../../types/context';
 import { Resolvers, User, UserFilterInput } from '../../../types/codegen.types';
-import Context from '../../../types/context';
 
 const resolvers: Resolvers = {
   Query: {
     users: async (
       root: {},
       { filter }: { filter: UserFilterInput },
-      { prisma }: Context,
+      { prisma }: ResolverContext,
     ) => {
       const userFilter = generatePrismaUserFilter(filter);
 
-      try {
-        const users = await prisma.user.findMany({
-          where: {
-            ...userFilter,
-          },
-        });
+      const users = await prisma.user.findMany({
+        where: {
+          ...userFilter,
+        },
+      });
 
-        return (users.length ? users : null) as [User] | null;
-      } catch (err) {
-        throw new GraphQLError('Error fetching users');
-      }
+      return (users.length ? users : null) as [User] | null;
     },
 
-    user: async (root: {}, { id }: { id: string }, { prisma }: Context) => {
-      try {
-        const user = await prisma.user.findUnique({
-          where: {
-            id,
-          },
-        });
+    user: async (
+      root: {},
+      { id }: { id: string },
+      { prisma }: ResolverContext,
+    ) => {
+      const user = await prisma.user.findUnique({
+        where: {
+          id,
+        },
+      });
 
-        // HANDLEERROR: user not found
-
-        return user as User;
-      } catch (err) {
-        throw new GraphQLError('Error fetching user');
-      }
+      return (user ? user : null) as User | null;
     },
 
-    me: async (root: {}, args: {}, { prisma, authUser }: Context) => {
+    me: async (root: {}, args: {}, { prisma, authUser }: ResolverContext) => {
       if (!authUser) throw new GraphQLError('Not Authenticated');
       const { id } = authUser;
 
-      try {
-        const user = await prisma.user.findUnique({
-          where: {
-            id,
-          },
-        });
+      const user = await prisma.user.findUnique({
+        where: {
+          id,
+        },
+      });
 
-        // HANDLEERROR: user not found
-
-        return user as User;
-      } catch (err) {
-        throw new GraphQLError('Error fetching user');
-      }
+      return user as User;
     },
 
-    db: async (root: {}, args: {}, { prisma }: Context) => {
+    db: async (
+      root: {},
+      args: {},
+      { request, authUser, prisma }: ResolverContext,
+    ) => {
       return true;
     },
   },

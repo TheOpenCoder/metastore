@@ -14,9 +14,10 @@ export const permissions = shield(
     },
     Mutation: {
       updateUser: isAuthenticated,
-      deleteUser: isAuthenticated,
       sendFriendRequest: isAuthenticated,
+      cancelFriendRequest: isAuthenticated,
       acceptFriendRequest: isAuthenticated,
+      declineFriendRequest: isAuthenticated,
     },
   },
   { allowExternalErrors: true },

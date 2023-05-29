@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import DataLoader from 'dataloader';
 
-export default interface Context {
+export interface Context {
   prisma: PrismaClient;
   authUser: {
     id: string;
@@ -9,6 +9,16 @@ export default interface Context {
     username: string;
   } | null;
   userLoader: DataLoader<string, any, string>;
-  req: Request;
-  res: Response;
+}
+
+export interface ResolverContext {
+  prisma: PrismaClient;
+  authUser: {
+    id: string;
+    publicAddress: string;
+    username: string;
+  } | null;
+  userLoader: DataLoader<string, any, string>;
+  request: Request;
+  response: Response;
 }

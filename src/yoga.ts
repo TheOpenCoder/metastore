@@ -1,6 +1,7 @@
 import { createYoga, createSchema } from 'graphql-yoga';
 import { applyMiddleware } from 'graphql-middleware';
 import { useCSRFPrevention } from '@graphql-yoga/plugin-csrf-prevention';
+import { useCookies } from '@whatwg-node/server-plugin-cookies';
 
 import typeDefs from './graphql/typeDefs';
 import resolvers from './graphql/resolvers';
@@ -19,6 +20,7 @@ export const yogaConfig =
     ? {
         schema: schemaWithPermissions,
         context,
+        plugins: [useCookies()],
       }
     : {
         schema: schemaWithPermissions,
@@ -27,6 +29,7 @@ export const yogaConfig =
           useCSRFPrevention({
             requestHeaders: ['x-graphql-yoga-csrf'],
           }),
+          useCookies(),
         ],
       };
 

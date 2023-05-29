@@ -1,5 +1,5 @@
-import { UserFilterInput } from '../types/codegen.types';
-import UserFilter from '../types/filter/userFilter';
+import { UserFilterInput } from '../../types/codegen.types';
+import UserFilter from '../../types/filters/userFilter';
 
 export const generatePrismaUserFilter = ({
   publicAddress,
