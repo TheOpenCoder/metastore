@@ -26,3 +26,9 @@ input UpdateUserSettingsInput {
   isPrivate: Boolean
   canReceiveFriendRequests: Boolean
 }
+
+input UserFilterInput {
+  username: StringQueryOperatorInput
+  publicAddress: StringQueryOperatorInput
+  firstName: StringQueryOperatorInput
+}

@@ -129,5 +129,6 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-# Todo file
+# Todo files
 todo.txt
+todo*.txt

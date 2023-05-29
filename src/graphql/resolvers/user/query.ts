@@ -1,11 +1,33 @@
 import * as _ from 'lodash';
 import { GraphQLError } from 'graphql';
 
-import { Resolvers, User } from '../../../types/codegen.types';
+import { generatePrismaUserFilter } from '../../../utils/prismaFilter';
+
+import { Resolvers, User, UserFilterInput } from '../../../types/codegen.types';
 import Context from '../../../types/context';
 
 const resolvers: Resolvers = {
   Query: {
+    users: async (
+      root: {},
+      { filter }: { filter: UserFilterInput },
+      { prisma }: Context,
+    ) => {
+      const userFilter = generatePrismaUserFilter(filter);
+
+      try {
+        const users = await prisma.user.findMany({
+          where: {
+            ...userFilter,
+          },
+        });
+
+        return (users.length ? users : null) as [User] | null;
+      } catch (err) {
+        throw new GraphQLError('Error fetching users');
+      }
+    },
+
     user: async (root: {}, { id }: { id: string }, { prisma }: Context) => {
       try {
         const user = await prisma.user.findUnique({
@@ -14,21 +36,11 @@ const resolvers: Resolvers = {
           },
         });
 
-        if (!user) throw new GraphQLError("User doesn't exist");
+        // HANDLEERROR: user not found
 
         return user as User;
       } catch (err) {
         throw new GraphQLError('Error fetching user');
-      }
-    },
-
-    users: async (root: {}, args: {}, { prisma }: Context) => {
-      try {
-        const users = await prisma.user.findMany({});
-
-        return users as [User];
-      } catch (err) {
-        throw new GraphQLError('Error fetching users');
       }
     },
 
@@ -43,7 +55,7 @@ const resolvers: Resolvers = {
           },
         });
 
-        if (!user) throw new Error("User doesn't exist");
+        // HANDLEERROR: user not found
 
         return user as User;
       } catch (err) {
@@ -52,18 +64,6 @@ const resolvers: Resolvers = {
     },
 
     db: async (root: {}, args: {}, { prisma }: Context) => {
-      // do db stuff here
-      const result = await prisma.user.findUnique({
-        where: {
-          id: '426b8d28-be41-493b-9716-61bd2414703f',
-        },
-        include: {
-          requestedBy: true,
-        },
-      });
-
-      console.log(result?.requestedBy);
-
       return true;
     },
   },

@@ -1,6 +1,6 @@
-import { User, OnlineStatus } from '../../types';
+import { User, OnlineStatus } from '../types/codegen.types';
 
-const users: User[] = [
+const users: any[] = [
   {
     id: '1',
     publicAddress: '0x1',

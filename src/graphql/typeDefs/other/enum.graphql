@@ -11,6 +11,13 @@ enum Currency {
   USD
 }
 
+enum Platform {
+  WINDOWS
+  MAC
+  WEB
+  MOBILE_WEB
+}
+
 enum Genre {
   ACTION
   ADVENTURE
@@ -28,7 +35,7 @@ enum Genre {
   OTHER
 }
 
-enum Features {
+enum Feature {
   SINGLE_PLAYER
   MULTI_PLAYER
   CO_OP

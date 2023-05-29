@@ -15,7 +15,7 @@ const schema = createSchema({
 const schemaWithPermissions = applyMiddleware(schema, permissions);
 
 export const yogaConfig =
-  process.env.NODE_ENV === 'development'
+  process.env.NODE_ENV !== 'production'
     ? {
         schema: schemaWithPermissions,
         context,

@@ -1,4 +1,9 @@
 type Game {
-  id: ID
-  name: String
+  id: ID!
+  title: String!
+  slug: String!
+  tagLine: String!
+  platform: [Platform!]
+  genre: [Genre!]
+  features: [Feature!]
 }

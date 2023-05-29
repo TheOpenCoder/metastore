@@ -7,4 +7,5 @@ type Mutation {
   acceptFriendRequest(from: ID!): Boolean! # shouldBeAuthenticated
   declineFriendRequest(from: ID!): Boolean! # shouldBeAuthenticated
   removeFriend(friend: ID!): Boolean! # shouldBeAuthenticated
+  cancelFriendRequest(to: ID!): Boolean! # shouldBeAuthenticated
 }

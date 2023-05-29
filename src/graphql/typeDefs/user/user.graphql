@@ -7,42 +7,43 @@ type User {
   lastName: String
   bio: String
   profilePicture: String
+  onlineStatus: OnlineStatus!
   settings: UserSettings!
   socials: UserSocials!
   games: UserGames!
   addons: UserAddons!
   organisations: UserOrganisations!
-  achievements: [Achievement]!
-  reviews: [Review]!
+  tournaments: [Tournament!]
+  achievements: [Achievement!]
+  reviews: [Review!]
   metrics: UserMetrics!
   createdAt: Date!
   updatedAt: Date
 }
 
 type UserSettings {
-  onlineStatus: OnlineStatus
   isPrivate: Boolean
   canReceiveFriendRequests: Boolean
 }
 
 type UserSocials {
-  friends: [User]!
-  friendRequests: [User]!
+  friends: [User!]
+  friendRequests: [User!]
 }
 
 type UserGames {
-  library: [Game]!
-  favorite: [Game]!
+  library: [Game!]
+  favorite: [Game!]
 }
 
 type UserAddons {
-  library: [Addon]!
-  favorite: [Addon]!
+  library: [Addon!]
+  favorite: [Addon!]
 }
 
 type UserOrganisations {
-  created: [Organisation]!
-  joined: [Organisation]!
+  created: [Organisation!]
+  joined: [Organisation!]
 }
 
 type UserMetrics {

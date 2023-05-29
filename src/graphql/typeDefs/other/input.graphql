@@ -1,0 +1,6 @@
+input StringQueryOperatorInput {
+  eq: String
+  ne: String
+  in: [String!]
+  nin: [String!]
+}

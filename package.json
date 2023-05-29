@@ -4,7 +4,7 @@
   "description": "Metastore Server",
   "main": "/src/server.ts",
   "scripts": {
-    "start": "dotenv -e .env.production.local pnpm build && pnpm serve",
+    "start": "dotenv -e .env pnpm build && pnpm serve",
     "dev": "pnpm codegen && dotenv -e .env.development.local nodemon src/server",
     "serve": "node dist/server",
     "build": "tsc",

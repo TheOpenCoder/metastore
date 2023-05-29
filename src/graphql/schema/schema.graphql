@@ -13,8 +13,13 @@ type Addon {
 }
 
 type Game {
-  id: ID
-  name: String
+  id: ID!
+  title: String!
+  slug: String!
+  tagLine: String!
+  platform: [Platform!]
+  genre: [Genre!]
+  features: [Feature!]
 }
 
 type Organisation {
@@ -35,6 +40,13 @@ enum Currency {
   USD
 }
 
+enum Platform {
+  WINDOWS
+  MAC
+  WEB
+  MOBILE_WEB
+}
+
 enum Genre {
   ACTION
   ADVENTURE
@@ -52,7 +64,7 @@ enum Genre {
   OTHER
 }
 
-enum Features {
+enum Feature {
   SINGLE_PLAYER
   MULTI_PLAYER
   CO_OP
@@ -75,6 +87,14 @@ enum Rarity {
   LEGENDARY
   MYTHIC
   UNIQUE
+}
+
+input StringQueryOperatorInput {
+  eq: String
+  ne: String
+  in: [String!]
+  nin: [String!]
+  regex: String
 }
 
 scalar Date
@@ -103,13 +123,14 @@ type Mutation {
   acceptFriendRequest(from: ID!): Boolean!
   declineFriendRequest(from: ID!): Boolean!
   removeFriend(friend: ID!): Boolean!
+  cancelFriendRequest(to: ID!): Boolean!
 }
 
 type Query {
   review(id: ID!): Review
   reviews: [Review]!
+  users(filter: UserFilterInput = {}): [User!]
   user(id: ID!): User
-  users: [User]!
   me: User!
   db: Boolean
 }
@@ -157,6 +178,12 @@ input UpdateUserSettingsInput {
   canReceiveFriendRequests: Boolean
 }
 
+input UserFilterInput {
+  username: StringQueryOperatorInput
+  publicAddress: StringQueryOperatorInput
+  firstName: StringQueryOperatorInput
+}
+
 type User {
   id: ID!
   publicAddress: String!
@@ -166,42 +193,43 @@ type User {
   lastName: String
   bio: String
   profilePicture: String
+  onlineStatus: OnlineStatus!
   settings: UserSettings!
   socials: UserSocials!
   games: UserGames!
   addons: UserAddons!
   organisations: UserOrganisations!
-  achievements: [Achievement]!
-  reviews: [Review]!
+  tournaments: [Tournament!]
+  achievements: [Achievement!]
+  reviews: [Review!]
   metrics: UserMetrics!
   createdAt: Date!
   updatedAt: Date
 }
 
 type UserSettings {
-  onlineStatus: OnlineStatus
   isPrivate: Boolean
   canReceiveFriendRequests: Boolean
 }
 
 type UserSocials {
-  friends: [User]!
-  friendRequests: [User]!
+  friends: [User!]
+  friendRequests: [User!]
 }
 
 type UserGames {
-  library: [Game]!
-  favorite: [Game]!
+  library: [Game!]
+  favorite: [Game!]
 }
 
 type UserAddons {
-  library: [Addon]!
-  favorite: [Addon]!
+  library: [Addon!]
+  favorite: [Addon!]
 }
 
 type UserOrganisations {
-  created: [Organisation]!
-  joined: [Organisation]!
+  created: [Organisation!]
+  joined: [Organisation!]
 }
 
 type UserMetrics {
