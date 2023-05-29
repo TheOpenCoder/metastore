@@ -44,7 +44,9 @@ const resolvers: Resolvers = {
           username,
           firstName,
           profilePicture,
-          userSettings: {},
+          userSettings: {
+            create: {},
+          },
         },
       });
 
@@ -118,6 +120,17 @@ const resolvers: Resolvers = {
       if (!authUser) throw new GraphQLError('Not Authenticated');
       const { id } = authUser;
 
+      const isPrivate =
+        settings?.isPrivate != null && settings?.isPrivate != undefined
+          ? settings?.isPrivate
+          : undefined;
+
+      const canReceiveFriendRequests =
+        settings?.canReceiveFriendRequests != null &&
+        settings?.canReceiveFriendRequests != undefined
+          ? settings?.canReceiveFriendRequests
+          : undefined;
+
       const user = await prisma.user.update({
         where: { id },
         data: {
@@ -129,9 +142,8 @@ const resolvers: Resolvers = {
           onlineStatus: onlineStatus || undefined,
           userSettings: {
             update: {
-              isPrivate: settings?.isPrivate || undefined,
-              canReceiveFriendRequests:
-                settings?.canReceiveFriendRequests || undefined,
+              isPrivate,
+              canReceiveFriendRequests,
             },
           },
         },
