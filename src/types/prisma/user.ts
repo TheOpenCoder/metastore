@@ -9,18 +9,17 @@ export default interface PrismaUser {
   lastName: string | null;
   bio: string | null;
   profilePicture: string | null;
+  onlineStatus: OnlineStatus;
   createdAt: Date;
   updatedAt: Date;
   userSettings: {
-    userId: string;
-    onlineStatus: OnlineStatus;
     isPrivate: boolean;
     canReceiveFriendRequests: boolean;
-    updatedAt: Date;
-  };
-  following: {
+  } | null;
+  receivedFollows: {
     followerId: string;
-    followingId: string;
-    createdAt: Date;
-  };
+  }[];
+  receivedRequests: {
+    requesterId: string;
+  }[];
 }

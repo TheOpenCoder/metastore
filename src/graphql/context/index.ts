@@ -8,6 +8,8 @@ import batchUsers from '../../dataloaders/user';
 import { Context } from '../../types/context';
 import { User } from '../../types/codegen.types';
 
+import PrismaUser from '../../types/prisma/user';
+
 const prisma = new PrismaClient({
   log: ['query'],
 });

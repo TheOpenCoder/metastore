@@ -15,7 +15,12 @@ export default async (
       },
     },
     include: {
-      userSettings: true,
+      userSettings: {
+        select: {
+          isPrivate: true,
+          canReceiveFriendRequests: true,
+        },
+      },
       receivedRequests: {
         select: {
           requesterId: true,
@@ -23,7 +28,7 @@ export default async (
       },
       receivedFollows: {
         select: {
-          followeeId: true,
+          followerId: true,
         },
       },
     },

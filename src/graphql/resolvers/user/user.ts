@@ -98,18 +98,24 @@ const resolvers: Resolvers = {
       args: {},
       { userLoader }: ResolverContext,
     ) => {
-      const { requestedBy: requests, following: follows } =
-        await userLoader.load(parent.id);
+      // const {} = await userLoader.load(parent.id);
 
-      const friends = _.map(follows, (friend) => ({
-        id: friend.followingId,
+      const { receivedFollows, receivedRequests } = await userLoader.load(
+        parent.id,
+      );
+
+      const friends = _.map(receivedFollows, (friend) => ({
+        id: friend.followerId,
       })) as User[];
 
-      const friendRequests = _.map(requests, (request) => ({
+      const friendRequests = _.map(receivedRequests, (request) => ({
         id: request.requesterId,
       })) as User[];
 
-      return { friends, friendRequests } as UserSocials;
+      return {
+        friends: friends.length ? friends : null,
+        friendRequests: friendRequests.length ? friendRequests : null,
+      } as UserSocials;
     },
 
     createdAt: async (

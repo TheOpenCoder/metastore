@@ -177,7 +177,6 @@ export type PostReviewInput = {
 
 export type Query = {
   __typename?: 'Query';
-  db?: Maybe<Scalars['Boolean']>;
   me: User;
   review?: Maybe<Review>;
   reviews: Array<Maybe<Review>>;
@@ -520,7 +519,6 @@ export type OrganisationResolvers<ContextType = any, ParentType extends Resolver
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
-  db?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   me?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   review?: Resolver<Maybe<ResolversTypes['Review']>, ParentType, ContextType, RequireFields<QueryReviewArgs, 'id'>>;
   reviews?: Resolver<Array<Maybe<ResolversTypes['Review']>>, ParentType, ContextType>;

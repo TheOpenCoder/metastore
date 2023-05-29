@@ -153,6 +153,10 @@ const resolvers: Resolvers = {
     },
 
     // HANDLEERROR: friend request already sent
+    // HANDLEERROR: already received request
+    // HANDLEERROR: already friends
+    // HANDLEERROR: requestee doesn't exist
+    // HANDLEERROR: can't send request to self
     sendFriendRequest: async (
       root: {},
       { to: requesteeId }: { to: string },
@@ -231,6 +235,12 @@ const resolvers: Resolvers = {
           receivedFollows: {
             create: {
               followerId: requesterId,
+            },
+          },
+
+          sentFollows: {
+            create: {
+              followeeId: requesterId,
             },
           },
         },

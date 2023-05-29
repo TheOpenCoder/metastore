@@ -129,7 +129,6 @@ type Query {
   users(filter: UserFilterInput = {}): [User!]
   user(id: ID!): User
   me: User!
-  db: Boolean
 }
 
 type Review {

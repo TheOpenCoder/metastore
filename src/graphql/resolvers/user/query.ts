@@ -49,14 +49,6 @@ const resolvers: Resolvers = {
 
       return user as User;
     },
-
-    db: async (
-      root: {},
-      args: {},
-      { request, authUser, prisma }: ResolverContext,
-    ) => {
-      return true;
-    },
   },
 };
 
