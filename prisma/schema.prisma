@@ -53,29 +53,29 @@ enum Features {
 }
 
 model User {
-  id                  String                @id @default(uuid())
-  publicAddress       String                @unique
+  id                  String               @id @default(uuid())
+  publicAddress       String               @unique
   nonce               Int
-  username            String                @unique
+  username            String               @unique
   firstName           String?
   lastName            String?
   bio                 String?
   profilePicture      String?
-  onlineStatus        OnlineStatus          @default(ONLINE)
+  onlineStatus        OnlineStatus         @default(ONLINE)
   userSettings        UserSettings?
-  receivedFollows     Follows[]             @relation("followee")
-  sentFollows         Follows[]             @relation("follower")
-  receivedRequests    Requests[]            @relation("requestee")
-  sentRequests        Requests[]            @relation("requester")
+  receivedFollows     Follows[]            @relation("followee")
+  sentFollows         Follows[]            @relation("follower")
+  receivedRequests    Requests[]           @relation("requestee")
+  sentRequests        Requests[]           @relation("requester")
   Reviews             Review[]
-  libraryGames        LibraryGames[]
-  favouriteGames      FavoriteGames[]
+  libraryGames        LibraryGame[]
+  favouriteGames      FavoriteGame[]
   ownedAddons         Addon[]
-  FavoriteAddons      FavoriteAddons[]
+  FavoriteAddons      FavoriteAddon[]
   createdOrganization Organisation[]
-  joinedOrganization  OrganisationMembers[]
-  createdAt           DateTime              @default(now())
-  updatedAt           DateTime              @updatedAt
+  joinedOrganization  OrganisationMember[]
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
 }
 
 model UserSettings {
@@ -107,40 +107,41 @@ model Requests {
 }
 
 model Game {
-  id             String          @id @default(uuid())
-  title          String          @unique
+  id             String         @id @default(uuid())
+  title          String         @unique
+  slug           String         @unique
   logo           String
   price          Float?
   offerPrice     Float?
-  currency       Currency?       @default(STORE)
+  currency       Currency?      @default(STORE)
   offerExpiresAt DateTime?
   tagLine        String
   Addon          Addon[]
   Achievements   Achievement[]
   Reviews        Review[]
-  LibraryGames   LibraryGames[]
-  FavoriteGames  FavoriteGames[]
-  Organisation   Organisation    @relation(fields: [organisationId], references: [id])
+  LibraryGames   LibraryGame[]
+  FavoriteGames  FavoriteGame[]
+  Organisation   Organisation   @relation(fields: [organisationId], references: [id])
   organisationId String
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
 }
 
-model LibraryGames {
-  id                     String                   @id @default(uuid())
-  User                   User                     @relation(fields: [userId], references: [id])
+model LibraryGame {
+  id                     String                  @id @default(uuid())
+  User                   User                    @relation(fields: [userId], references: [id])
   userId                 String
-  Game                   Game                     @relation(fields: [gameId], references: [id])
+  Game                   Game                    @relation(fields: [gameId], references: [id])
   gameId                 String
-  libraryGamesAchivement LibraryGamesAchivement[]
-  isCompleted            Boolean                  @default(false)
-  hoursPlayed            Int                      @default(0)
-  gameProgress           Int                      @default(0)
-  createdAt              DateTime                 @default(now())
-  updatedAt              DateTime                 @updatedAt
+  libraryGamesAchivement LibraryGameAchivement[]
+  isCompleted            Boolean                 @default(false)
+  hoursPlayed            Int                     @default(0)
+  gameProgress           Int                     @default(0)
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @updatedAt
 }
 
-model FavoriteGames {
+model FavoriteGame {
   User      User     @relation(fields: [userId], references: [id])
   userId    String
   Game      Game     @relation(fields: [gameId], references: [id])
@@ -151,22 +152,22 @@ model FavoriteGames {
 }
 
 model Addon {
-  id        String           @id @default(uuid())
+  id        String          @id @default(uuid())
   title     String
   image     String
   price     Float?
-  currency  Currency?        @default(STORE)
+  currency  Currency?       @default(STORE)
   grade     String?
-  game      Game             @relation(fields: [gameId], references: [id])
+  game      Game            @relation(fields: [gameId], references: [id])
   gameId    String
-  owner     User?            @relation(fields: [ownerId], references: [id])
+  owner     User?           @relation(fields: [ownerId], references: [id])
   ownerId   String?
-  favourite FavoriteAddons[]
-  createdAt DateTime         @default(now())
-  updatedAt DateTime         @updatedAt
+  favourite FavoriteAddon[]
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
 }
 
-model FavoriteAddons {
+model FavoriteAddon {
   User      User     @relation(fields: [userId], references: [id])
   userId    String
   Addon     Addon    @relation(fields: [addonId], references: [id])
@@ -177,22 +178,22 @@ model FavoriteAddons {
 }
 
 model Achievement {
-  id                     String                   @id @default(uuid())
-  title                  String                   @unique
+  id                     String                  @id @default(uuid())
+  title                  String                  @unique
   description            String
   image                  String
   grade                  String?
-  game                   Game                     @relation(fields: [gameId], references: [id])
+  game                   Game                    @relation(fields: [gameId], references: [id])
   gameId                 String
-  libraryGamesAchivement LibraryGamesAchivement[]
-  createdAt              DateTime                 @default(now())
-  updatedAt              DateTime                 @updatedAt
+  libraryGamesAchivement LibraryGameAchivement[]
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @updatedAt
 }
 
-model LibraryGamesAchivement {
-  LibraryGames   LibraryGames @relation(fields: [libraryGamesId], references: [id])
+model LibraryGameAchivement {
+  LibraryGames   LibraryGame @relation(fields: [libraryGamesId], references: [id])
   libraryGamesId String
-  Achievement    Achievement  @relation(fields: [achievementId], references: [id])
+  Achievement    Achievement @relation(fields: [achievementId], references: [id])
   achievementId  String
 
   @@id([libraryGamesId, achievementId])
@@ -211,19 +212,20 @@ model Review {
 }
 
 model Organisation {
-  id                  String                @id @default(uuid())
-  name                String                @unique
+  id                  String               @id @default(uuid())
+  name                String               @unique
+  slug                String               @unique
   about               String?
   logo                String?
   games               Game[]
-  creator             User                  @relation(fields: [creatorId], references: [id])
+  creator             User                 @relation(fields: [creatorId], references: [id])
   creatorId           String
-  OrganisationMembers OrganisationMembers[]
-  createdAt           DateTime              @default(now())
-  updatedAt           DateTime              @updatedAt
+  OrganisationMembers OrganisationMember[]
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
 }
 
-model OrganisationMembers {
+model OrganisationMember {
   organisation   Organisation @relation(fields: [organisationId], references: [id])
   organisationId String
   member         User         @relation(fields: [memberId], references: [id])
