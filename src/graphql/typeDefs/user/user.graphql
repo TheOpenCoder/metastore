@@ -11,10 +11,7 @@ type User {
   settings: UserSettings!
   socials: UserSocials!
   games: UserGames!
-  addons: UserAddons!
-  organisations: UserOrganisations!
   tournaments: [Tournament!]
-  achievements: [Achievement!]
   reviews: [Review!]
   metrics: UserMetrics!
   createdAt: Date!

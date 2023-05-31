@@ -11,6 +11,13 @@ enum Currency {
   USD
 }
 
+enum Chain {
+  THETA
+  ETHEREUM
+  SOLANA
+  POLYGON
+}
+
 enum Platform {
   WINDOWS
   MAC

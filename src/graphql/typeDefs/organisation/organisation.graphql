@@ -1,4 +1,0 @@
-type Organisation {
-  id: ID!
-  name: String
-}

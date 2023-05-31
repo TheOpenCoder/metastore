@@ -1,11 +1,5 @@
 input PostReviewInput {
-  game: ID!
+  gameId: ID!
   rating: Int!
-  content: String
-}
-
-input UpdateReviewInput {
-  id: ID!
-  rating: Int
   content: String
 }

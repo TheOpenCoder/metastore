@@ -17,9 +17,48 @@ type Game {
   title: String!
   slug: String!
   tagLine: String!
-  platform: [Platform!]
-  genre: [Genre!]
-  features: [Feature!]
+}
+
+type UserGame {
+  id: ID!
+  title: String!
+  slug: String!
+  tagLine: String!
+  userIdentifier: String!
+}
+
+type OrganisationGame {
+  id: ID!
+  title: String!
+  slug: String!
+  tagLine: String!
+  organisationIdentifier: String!
+}
+
+input CreateGameInput {
+  title: String!
+  slug: String!
+  tagLine: String!
+}
+
+type Mutation {
+  createGame(input: CreateGameInput!): Game!
+  registerUser(input: RegisterUserInput!): User!
+  loginUser(input: LoginUserInput!): User!
+  updateUser(input: UpdateUserInput!): User!
+  sendFriendRequest(to: ID!): Boolean!
+  cancelFriendRequest(to: ID!): Boolean!
+  acceptFriendRequest(from: ID!): Boolean!
+  declineFriendRequest(from: ID!): Boolean!
+}
+
+type Query {
+  games: [Game!]
+  userGames: [UserGame!]
+  organisationGames: [OrganisationGame!]
+  users(filter: UserFilterInput = {}): [User!]
+  user(id: ID!): User
+  me: User!
 }
 
 type Organisation {
@@ -97,39 +136,6 @@ input StringQueryOperatorInput {
 }
 
 scalar Date
-
-input PostReviewInput {
-  game: ID!
-  rating: Int!
-  content: String
-}
-
-input UpdateReviewInput {
-  id: ID!
-  rating: Int
-  content: String
-}
-
-type Mutation {
-  postReview(input: PostReviewInput): Review!
-  updateReview(input: UpdateReviewInput): Review!
-  deleteReview(id: ID!): Review!
-  registerUser(input: RegisterUserInput!): User!
-  loginUser(input: LoginUserInput!): User!
-  updateUser(input: UpdateUserInput!): User!
-  sendFriendRequest(to: ID!): Boolean!
-  cancelFriendRequest(to: ID!): Boolean!
-  acceptFriendRequest(from: ID!): Boolean!
-  declineFriendRequest(from: ID!): Boolean!
-}
-
-type Query {
-  review(id: ID!): Review
-  reviews: [Review]!
-  users(filter: UserFilterInput = {}): [User!]
-  user(id: ID!): User
-  me: User!
-}
 
 type Review {
   id: ID!

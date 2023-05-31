@@ -1,8 +1,0 @@
-type Achievement {
-  id: ID!
-  title: String!
-  description: String!
-  image: String!
-  rarity: Rarity!
-  game: Game!
-}

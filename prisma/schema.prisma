@@ -20,6 +20,20 @@ enum Currency {
   USD
 }
 
+enum Chain {
+  THETA
+  ETHEREUM
+  SOLANA
+  POLYGON
+}
+
+enum Platform {
+  WINDOWS
+  MAC
+  WEB
+  MOBILE_WEB
+}
+
 enum Genre {
   ACTION
   ADVENTURE
@@ -67,11 +81,11 @@ model User {
   sentFollows         Follows[]            @relation("follower")
   receivedRequests    Requests[]           @relation("requestee")
   sentRequests        Requests[]           @relation("requester")
-  Reviews             Review[]
+  reviews             Review[]
   libraryGames        LibraryGame[]
   favouriteGames      FavoriteGame[]
   ownedAddons         Addon[]
-  FavoriteAddons      FavoriteAddon[]
+  favoriteAddons      FavoriteAddon[]
   createdOrganization Organisation[]
   joinedOrganization  OrganisationMember[]
   createdAt           DateTime             @default(now())
@@ -79,7 +93,7 @@ model User {
 }
 
 model UserSettings {
-  User                     User     @relation(fields: [userId], references: [id])
+  user                     User     @relation(fields: [userId], references: [id])
   userId                   String   @id
   isPrivate                Boolean  @default(false)
   canReceiveFriendRequests Boolean  @default(true)
@@ -110,19 +124,35 @@ model Game {
   id             String         @id @default(uuid())
   title          String         @unique
   slug           String         @unique
+  gameUrl        String
   logo           String
-  price          Float?
-  offerPrice     Float?
   currency       Currency?      @default(STORE)
+  price          Float?
+  offer          Float?
   offerExpiresAt DateTime?
   tagLine        String
+  platforms      Platform[]
+  genres         Genre[]
+  features       Features[]
+  chain          Chain[]
+  description    String
+  publisher      String
+  developer      String
+  hero           String
+  isSample       Boolean        @default(false)
+  thumbnailImage String
+  thumbnailVideo String
+  ageRating      Int
+  trademark      String
+  carousel       String[]
   Addon          Addon[]
-  Achievements   Achievement[]
-  Reviews        Review[]
-  LibraryGames   LibraryGame[]
-  FavoriteGames  FavoriteGame[]
-  Organisation   Organisation   @relation(fields: [organisationId], references: [id])
+  achievements   Achievement[]
+  reviews        Review[]
+  libraryGames   LibraryGame[]
+  favoriteGames  FavoriteGame[]
+  organisation   Organisation   @relation(fields: [organisationId], references: [id])
   organisationId String
+  releaseDate    DateTime
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
 }
@@ -131,7 +161,7 @@ model LibraryGame {
   id                     String                  @id @default(uuid())
   User                   User                    @relation(fields: [userId], references: [id])
   userId                 String
-  Game                   Game                    @relation(fields: [gameId], references: [id])
+  game                   Game                    @relation(fields: [gameId], references: [id])
   gameId                 String
   libraryGamesAchivement LibraryGameAchivement[]
   isCompleted            Boolean                 @default(false)
@@ -141,10 +171,22 @@ model LibraryGame {
   updatedAt              DateTime                @updatedAt
 }
 
-model FavoriteGame {
-  User      User     @relation(fields: [userId], references: [id])
+model Review {
+  id        String   @id @default(uuid())
+  content   String?
+  rating    Int
+  game      Game     @relation(fields: [gameId], references: [id])
+  gameId    String
+  user      User     @relation(fields: [userId], references: [id])
   userId    String
-  Game      Game     @relation(fields: [gameId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model FavoriteGame {
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  game      Game     @relation(fields: [gameId], references: [id])
   gameId    String
   createdAt DateTime @default(now())
 
@@ -168,9 +210,9 @@ model Addon {
 }
 
 model FavoriteAddon {
-  User      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
   userId    String
-  Addon     Addon    @relation(fields: [addonId], references: [id])
+  addon     Addon    @relation(fields: [addonId], references: [id])
   addonId   String
   createdAt DateTime @default(now())
 
@@ -191,24 +233,12 @@ model Achievement {
 }
 
 model LibraryGameAchivement {
-  LibraryGames   LibraryGame @relation(fields: [libraryGamesId], references: [id])
+  libraryGames   LibraryGame @relation(fields: [libraryGamesId], references: [id])
   libraryGamesId String
-  Achievement    Achievement @relation(fields: [achievementId], references: [id])
+  achievement    Achievement @relation(fields: [achievementId], references: [id])
   achievementId  String
 
   @@id([libraryGamesId, achievementId])
-}
-
-model Review {
-  id        String   @id @default(uuid())
-  content   String?
-  rating    Int
-  game      Game     @relation(fields: [gameId], references: [id])
-  gameId    String
-  user      User     @relation(fields: [userId], references: [id])
-  userId    String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }
 
 model Organisation {
@@ -220,7 +250,7 @@ model Organisation {
   games               Game[]
   creator             User                 @relation(fields: [creatorId], references: [id])
   creatorId           String
-  OrganisationMembers OrganisationMember[]
+  organisationMembers OrganisationMember[]
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt
 }

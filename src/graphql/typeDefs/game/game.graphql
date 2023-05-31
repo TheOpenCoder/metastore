@@ -1,9 +1,32 @@
+# system requirements and carousel
 type Game {
   id: ID!
   title: String!
   slug: String!
+  gameUrl: String!
+  logo: String!
+  currency: Currency!
+  price: Float!
+  offer: Int
+  offerExpiresAt: Date
   tagLine: String!
-  platform: [Platform!]
-  genre: [Genre!]
-  features: [Feature!]
+  platforms: [Platform!]!
+  genres: [Genre!]!
+  features: [Feature!]!
+  chain: [Chain!]!
+  description: String!
+  publisher: String!
+  developer: String!
+  ageRating: Int!
+  hero: String!
+  thumbnailImage: String!
+  thumbnailVideo: String!
+  carousel: [String!]!
+  trademark: String!
+  isSample: Boolean!
+  tournaments: [Tournament!]
+  reviews: [Review!]
+  releaseDate: Date!
+  createdAt: Date!
+  updatedAt: Date!
 }

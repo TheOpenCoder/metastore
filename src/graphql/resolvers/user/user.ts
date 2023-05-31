@@ -118,6 +118,24 @@ const resolvers: Resolvers = {
       } as UserSocials;
     },
 
+    metrics: async (
+      parent: User,
+      args: {},
+      { userLoader }: ResolverContext,
+    ) => {
+      const { receivedFollows } = await userLoader.load(parent.id);
+
+      const friends = _.map(receivedFollows, (friend) => ({
+        id: friend.followerId,
+      })) as User[];
+
+      return {
+        totalAchievements: 0,
+        totalHoursPlayed: 0,
+        totalFriends: friends.length,
+      };
+    },
+
     createdAt: async (
       parent: User,
       args: {},
