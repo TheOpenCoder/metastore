@@ -1,4 +1,0 @@
-type Addon {
-  id: ID
-  name: String
-}
