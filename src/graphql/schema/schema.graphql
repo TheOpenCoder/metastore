@@ -58,6 +58,10 @@ input CreateGameInput {
   releaseDate: Date!
 }
 
+input GameFilterInput {
+  title: StringQueryOperatorInput
+}
+
 type Mutation {
   buyGame(gameId: String!): Boolean!
   createGame(input: CreateGameInput!): Game!
@@ -72,7 +76,7 @@ type Mutation {
 }
 
 type Query {
-  games: [Game!]
+  games(filter: GameFilterInput = {}): [Game!]
   game(id: ID!): Game
   users(filter: UserFilterInput = {}): [User!]
   user(id: ID!): User
@@ -151,6 +155,7 @@ enum Rarity {
 input StringQueryOperatorInput {
   eq: String
   ne: String
+  contains: String
   in: [String!]
   nin: [String!]
 }

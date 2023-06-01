@@ -14,6 +14,7 @@ export const generatePrismaUserFilter = ({
           in: publicAddress?.in as string[],
           not: publicAddress?.ne as string,
           notIn: publicAddress?.nin as string[],
+          contains: publicAddress?.contains as string,
         },
       },
       {
@@ -22,6 +23,7 @@ export const generatePrismaUserFilter = ({
           in: username?.in as string[],
           not: username?.ne as string,
           notIn: username?.nin as string[],
+          contains: username?.contains as string,
         },
       },
       {
@@ -30,6 +32,7 @@ export const generatePrismaUserFilter = ({
           in: firstName?.in as string[],
           not: firstName?.ne as string,
           notIn: firstName?.nin as string[],
+          contains: firstName?.contains as string,
         },
       },
     ],

@@ -1,6 +1,7 @@
 input StringQueryOperatorInput {
   eq: String
   ne: String
+  contains: String
   in: [String!]
   nin: [String!]
 }

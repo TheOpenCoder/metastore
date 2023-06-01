@@ -25,3 +25,7 @@ input CreateGameInput {
   trademark: String!
   releaseDate: Date!
 }
+
+input GameFilterInput {
+  title: StringQueryOperatorInput
+}

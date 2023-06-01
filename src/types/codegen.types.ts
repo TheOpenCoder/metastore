@@ -105,6 +105,10 @@ export type Game = {
   updatedAt: Scalars['Date'];
 };
 
+export type GameFilterInput = {
+  title?: InputMaybe<StringQueryOperatorInput>;
+};
+
 export enum Genre {
   Action = 'ACTION',
   Adventure = 'ADVENTURE',
@@ -225,6 +229,11 @@ export type QueryGameArgs = {
 };
 
 
+export type QueryGamesArgs = {
+  filter?: InputMaybe<GameFilterInput>;
+};
+
+
 export type QueryUserArgs = {
   id: Scalars['ID'];
 };
@@ -264,6 +273,7 @@ export type Review = {
 };
 
 export type StringQueryOperatorInput = {
+  contains?: InputMaybe<Scalars['String']>;
   eq?: InputMaybe<Scalars['String']>;
   in?: InputMaybe<Array<Scalars['String']>>;
   ne?: InputMaybe<Scalars['String']>;
@@ -414,6 +424,7 @@ export type ResolversTypes = {
   Feature: Feature;
   Float: ResolverTypeWrapper<Scalars['Float']>;
   Game: ResolverTypeWrapper<Game>;
+  GameFilterInput: GameFilterInput;
   Genre: Genre;
   ID: ResolverTypeWrapper<Scalars['ID']>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
@@ -445,6 +456,7 @@ export type ResolversParentTypes = {
   Date: Scalars['Date'];
   Float: Scalars['Float'];
   Game: Game;
+  GameFilterInput: GameFilterInput;
   ID: Scalars['ID'];
   Int: Scalars['Int'];
   LoginUserInput: LoginUserInput;
@@ -517,7 +529,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   game?: Resolver<Maybe<ResolversTypes['Game']>, ParentType, ContextType, RequireFields<QueryGameArgs, 'id'>>;
-  games?: Resolver<Maybe<Array<ResolversTypes['Game']>>, ParentType, ContextType>;
+  games?: Resolver<Maybe<Array<ResolversTypes['Game']>>, ParentType, ContextType, RequireFields<QueryGamesArgs, 'filter'>>;
   me?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserArgs, 'id'>>;
   users?: Resolver<Maybe<Array<ResolversTypes['User']>>, ParentType, ContextType, RequireFields<QueryUsersArgs, 'filter'>>;

@@ -1,9 +1,20 @@
-import { Resolvers, Game } from '../../../types/codegen.types';
+import { Resolvers, Game, GameFilterInput } from '../../../types/codegen.types';
+import { generatePrismaGameFilter } from '../../../utils/prismaFilters/gamefilter';
 
 const resolvers: Resolvers = {
   Query: {
-    games: async (root: {}, args: {}, { prisma }: any) => {
-      const games = (await prisma.game.findMany({})) as Game[];
+    games: async (
+      root: {},
+      { filter }: { filter: GameFilterInput },
+      { prisma }: any,
+    ) => {
+      const gameFilter = generatePrismaGameFilter(filter);
+
+      const games = (await prisma.game.findMany({
+        where: {
+          ...gameFilter,
+        },
+      })) as Game[];
 
       return games;
     },

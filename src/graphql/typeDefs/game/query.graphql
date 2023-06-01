@@ -1,4 +1,4 @@
 type Query {
-  games: [Game!]
+  games(filter: GameFilterInput = {}): [Game!]
   game(id: ID!): Game
 }

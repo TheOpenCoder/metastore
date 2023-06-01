@@ -4,6 +4,7 @@ export default interface UserFilter {
       publicAddress: {
         equals: string;
         in: string[];
+        contains: string;
         not: string;
         notIn: string[];
       };
@@ -12,6 +13,7 @@ export default interface UserFilter {
       username: {
         equals: string;
         in: string[];
+        contains: string;
         not: string;
         notIn: string[];
       };
@@ -20,6 +22,7 @@ export default interface UserFilter {
       firstName: {
         equals: string;
         in: string[];
+        contains: string;
         not: string;
         notIn: string[];
       };
