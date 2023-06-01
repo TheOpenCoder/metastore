@@ -16,7 +16,7 @@ const resolvers: Resolvers = {
         },
       })) as Game[];
 
-      return games;
+      return (games.length ? games : null) as [Game] | null;
     },
 
     game: async (root: {}, { id }: { id: string }, { prisma }: any) => {
