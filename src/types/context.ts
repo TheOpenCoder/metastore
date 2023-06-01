@@ -9,6 +9,7 @@ export interface Context {
     username: string;
   } | null;
   userLoader: DataLoader<string, any, string>;
+  gameLoader: DataLoader<string, any, string>;
 }
 
 export interface ResolverContext {
@@ -19,6 +20,7 @@ export interface ResolverContext {
     username: string;
   } | null;
   userLoader: DataLoader<string, any, string>;
+  gameLoader: DataLoader<string, any, string>;
   request: Request;
   response: Response;
 }

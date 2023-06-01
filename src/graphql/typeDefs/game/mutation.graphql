@@ -1,3 +1,4 @@
 type Mutation {
-  buyGame(gameId: Int!): Boolean
+  buyGame(gameId: String!): Boolean!
+  createGame(input: CreateGameInput!): Game!
 }

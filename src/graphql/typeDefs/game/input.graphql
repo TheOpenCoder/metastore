@@ -1,6 +1,4 @@
-# system requirements and carousel
-type Game {
-  id: ID!
+input CreateGameInput {
   title: String!
   slug: String!
   gameUrl: String!
@@ -10,7 +8,7 @@ type Game {
   thumbnailImage: String!
   thumbnailVideo: String!
   carousel: [String!]!
-  currency: Currency!
+  currency: Currency
   price: Float
   offer: Int
   offerExpiresAt: Date
@@ -25,8 +23,5 @@ type Game {
   isSample: Boolean!
   ageRating: Int!
   trademark: String!
-  reviews: [Review!]
   releaseDate: Date!
-  createdAt: Date!
-  updatedAt: Date!
 }

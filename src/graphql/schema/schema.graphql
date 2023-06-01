@@ -1,48 +1,67 @@
-type Achievement {
-  id: ID!
-  title: String!
-  description: String!
-  image: String!
-  rarity: Rarity!
-  game: Game!
-}
-
-type Addon {
-  id: ID
-  name: String
-}
-
 type Game {
   id: ID!
   title: String!
   slug: String!
+  gameUrl: String!
+  gameLogo: String!
+  heroLogo: String!
+  hero: String!
+  thumbnailImage: String!
+  thumbnailVideo: String!
+  carousel: [String!]!
+  currency: Currency!
+  price: Float
+  offer: Int
+  offerExpiresAt: Date
   tagLine: String!
-}
-
-type UserGame {
-  id: ID!
-  title: String!
-  slug: String!
-  tagLine: String!
-  userIdentifier: String!
-}
-
-type OrganisationGame {
-  id: ID!
-  title: String!
-  slug: String!
-  tagLine: String!
-  organisationIdentifier: String!
+  platforms: [Platform!]!
+  genres: [Genre!]!
+  features: [Feature!]!
+  chain: [Chain!]!
+  description: String!
+  publisher: String!
+  developer: String!
+  isSample: Boolean!
+  ageRating: Int!
+  trademark: String!
+  reviews: [Review!]
+  releaseDate: Date!
+  createdAt: Date!
+  updatedAt: Date!
 }
 
 input CreateGameInput {
   title: String!
   slug: String!
+  gameUrl: String!
+  gameLogo: String!
+  heroLogo: String!
+  hero: String!
+  thumbnailImage: String!
+  thumbnailVideo: String!
+  carousel: [String!]!
+  currency: Currency
+  price: Float
+  offer: Int
+  offerExpiresAt: Date
   tagLine: String!
+  platforms: [Platform!]!
+  genres: [Genre!]!
+  features: [Feature!]!
+  chain: [Chain!]!
+  description: String!
+  publisher: String!
+  developer: String!
+  isSample: Boolean!
+  ageRating: Int!
+  trademark: String!
+  releaseDate: Date!
 }
 
 type Mutation {
+  buyGame(gameId: String!): Boolean!
   createGame(input: CreateGameInput!): Game!
+  postReview(review: PostReviewInput): Review!
   registerUser(input: RegisterUserInput!): User!
   loginUser(input: LoginUserInput!): User!
   updateUser(input: UpdateUserInput!): User!
@@ -54,16 +73,10 @@ type Mutation {
 
 type Query {
   games: [Game!]
-  userGames: [UserGame!]
-  organisationGames: [OrganisationGame!]
+  game(id: ID!): Game
   users(filter: UserFilterInput = {}): [User!]
   user(id: ID!): User
   me: User!
-}
-
-type Organisation {
-  id: ID!
-  name: String
 }
 
 enum OnlineStatus {
@@ -77,6 +90,13 @@ enum Currency {
   USDT
   TFUEL
   USD
+}
+
+enum Chain {
+  THETA
+  ETHEREUM
+  SOLANA
+  POLYGON
 }
 
 enum Platform {
@@ -137,6 +157,12 @@ input StringQueryOperatorInput {
 
 scalar Date
 
+input PostReviewInput {
+  gameId: ID!
+  rating: Int!
+  content: String
+}
+
 type Review {
   id: ID!
   user: User!
@@ -144,11 +170,6 @@ type Review {
   rating: Int!
   content: String
   createdAt: Date!
-}
-
-type Tournament {
-  id: ID!
-  name: String!
 }
 
 input RegisterUserInput {
@@ -199,10 +220,6 @@ type User {
   settings: UserSettings!
   socials: UserSocials!
   games: UserGames!
-  addons: UserAddons!
-  organisations: UserOrganisations!
-  tournaments: [Tournament!]
-  achievements: [Achievement!]
   reviews: [Review!]
   metrics: UserMetrics!
   createdAt: Date!
@@ -221,17 +238,6 @@ type UserSocials {
 
 type UserGames {
   library: [Game!]
-  favorite: [Game!]
-}
-
-type UserAddons {
-  library: [Addon!]
-  favorite: [Addon!]
-}
-
-type UserOrganisations {
-  created: [Organisation!]
-  joined: [Organisation!]
 }
 
 type UserMetrics {

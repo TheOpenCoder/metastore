@@ -4,9 +4,10 @@ import * as DataLoader from 'dataloader';
 import { getAuthCookie } from '../../auth/cookies';
 import { verifyJWT } from '../../auth/jwt';
 import batchUsers from '../../dataloaders/user';
+import batchGames from '../../dataloaders/game';
 
 import { Context } from '../../types/context';
-import { User } from '../../types/codegen.types';
+import { User, Game } from '../../types/codegen.types';
 
 import PrismaUser from '../../types/prisma/user';
 
@@ -31,6 +32,9 @@ export const context = async ({
       userLoader: new DataLoader<string, User>((ids: readonly string[]) =>
         batchUsers(ids, prisma),
       ),
+      gameLoader: new DataLoader<string, Game>((ids: readonly string[]) =>
+        batchGames(ids, prisma),
+      ),
     };
   }
 
@@ -43,6 +47,9 @@ export const context = async ({
       userLoader: new DataLoader<string, User>((ids: readonly string[]) =>
         batchUsers(ids, prisma),
       ),
+      gameLoader: new DataLoader<string, Game>((ids: readonly string[]) =>
+        batchGames(ids, prisma),
+      ),
     };
   } catch (err) {
     return {
@@ -50,6 +57,9 @@ export const context = async ({
       authUser: null,
       userLoader: new DataLoader<string, User>((ids: readonly string[]) =>
         batchUsers(ids, prisma),
+      ),
+      gameLoader: new DataLoader<string, Game>((ids: readonly string[]) =>
+        batchGames(ids, prisma),
       ),
     };
   }

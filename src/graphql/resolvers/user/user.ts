@@ -6,6 +6,7 @@ import {
   OnlineStatus,
   UserSettings,
   UserSocials,
+  Game,
 } from '../../../types/codegen.types';
 import { ResolverContext } from '../../../types/context';
 
@@ -134,6 +135,28 @@ const resolvers: Resolvers = {
         totalHoursPlayed: 0,
         totalFriends: friends.length,
       };
+    },
+
+    games: async (parent: User, args: {}, { userLoader }: ResolverContext) => {
+      const { libraryGames } = await userLoader.load(parent.id);
+
+      const refactoredLibraryGames = _.map(libraryGames, (game) => ({
+        id: game.gameId,
+      }));
+
+      return {
+        library: refactoredLibraryGames as Game[],
+      };
+    },
+
+    reviews: async (
+      parent: User,
+      args: {},
+      { userLoader }: ResolverContext,
+    ) => {
+      // const { reviews } = await userLoader.load(parent.id);
+
+      return null;
     },
 
     createdAt: async (

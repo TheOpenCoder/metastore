@@ -8,39 +8,15 @@ export default async (
 ): Promise<any> => {
   const keys = [...ids];
 
-  const users = await prisma.user.findMany({
+  const games = await prisma.game.findMany({
     where: {
       id: {
         in: keys,
       },
     },
-    include: {
-      userSettings: {
-        select: {
-          isPrivate: true,
-          canReceiveFriendRequests: true,
-        },
-      },
-      receivedRequests: {
-        select: {
-          requesterId: true,
-        },
-      },
-      receivedFollows: {
-        select: {
-          followerId: true,
-        },
-      },
-
-      libraryGames: {
-        select: {
-          gameId: true,
-        },
-      },
-    },
   });
 
-  return ids.map((id) => users.find((user) => user.id === id));
+  return ids.map((id) => games.find((game) => game.id === id));
 };
 
 // actual code to build dataloader
