@@ -23,6 +23,7 @@ type Game {
   publisher: String!
   developer: String!
   isSample: Boolean!
+  haveBought: Boolean!
   ageRating: Int!
   trademark: String!
   reviews: [Review!]

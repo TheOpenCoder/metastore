@@ -197,6 +197,23 @@ const resolvers: Resolvers = {
       return isSample;
     },
 
+    haveBought: async (
+      parent: Game,
+      args: {},
+      { gameLoader, authUser }: ResolverContext,
+    ) => {
+      if (!authUser) return false;
+      const { id } = authUser;
+
+      const { libraryGames } = await gameLoader.load(parent.id);
+
+      const haveBought = _.some(libraryGames, (libraryGame) => {
+        return libraryGame.userId === id;
+      });
+
+      return haveBought;
+    },
+
     ageRating: async (
       parent: Game,
       args: {},

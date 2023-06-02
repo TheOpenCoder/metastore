@@ -85,6 +85,7 @@ export type Game = {
   gameLogo: Scalars['String'];
   gameUrl: Scalars['String'];
   genres: Array<Genre>;
+  haveBought: Scalars['Boolean'];
   hero: Scalars['String'];
   heroLogo: Scalars['String'];
   id: Scalars['ID'];
@@ -493,6 +494,7 @@ export type GameResolvers<ContextType = any, ParentType extends ResolversParentT
   gameLogo?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   gameUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   genres?: Resolver<Array<ResolversTypes['Genre']>, ParentType, ContextType>;
+  haveBought?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   hero?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   heroLogo?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;

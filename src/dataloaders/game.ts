@@ -14,6 +14,13 @@ export default async (
         in: keys,
       },
     },
+    include: {
+      libraryGames: {
+        select: {
+          userId: true,
+        },
+      },
+    },
   });
 
   return ids.map((id) => games.find((game) => game.id === id));
