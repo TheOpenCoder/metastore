@@ -107,6 +107,7 @@ export type Game = {
 };
 
 export type GameFilterInput = {
+  slug?: InputMaybe<StringQueryOperatorInput>;
   title?: InputMaybe<StringQueryOperatorInput>;
 };
 

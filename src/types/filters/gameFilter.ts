@@ -9,5 +9,14 @@ export default interface GameFilter {
         notIn: string[];
       };
     },
+    {
+      slug: {
+        equals: string;
+        in: string[];
+        contains: string;
+        not: string;
+        notIn: string[];
+      };
+    },
   ];
 }

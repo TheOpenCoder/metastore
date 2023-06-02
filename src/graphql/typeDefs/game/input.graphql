@@ -28,4 +28,5 @@ input CreateGameInput {
 
 input GameFilterInput {
   title: StringQueryOperatorInput
+  slug: StringQueryOperatorInput
 }
