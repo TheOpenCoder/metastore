@@ -12,7 +12,7 @@ const app = express();
 
 app.use(cors());
 // @ts-expect-error
-app.use('/', yoga);
+app.use(yoga.graphqlEndpoint, yoga);
 
 app.listen(PORT, () => {
   console.log(`Running a GraphQL server at /graphql`);
